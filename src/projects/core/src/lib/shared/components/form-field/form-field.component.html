@@ -1,0 +1,14 @@
+<ng-content></ng-content>
+<div *ngFor="let error of input.errors | keyvalue" class="m-t-10">
+  <small *ngIf="error.key === 'required' && input.touched" [class]="elementClass">{{ 'SHARED.VALIDATORS.REQUIRED' | translate }}</small>
+  <small *ngIf="error.key === 'atLeastOne' && input.touched" [class]="elementClass"> {{ 'SHARED.VALIDATORS.AT_LEAST_ONE' | translate }}</small>
+  <small *ngIf="error.key === 'anyOrAll' && input.touched" [class]="elementClass">{{ 'SHARED.VALIDATORS.ALL' | translate }}</small>
+  <small *ngIf="error.key === 'email' && input.touched" [class]="elementClass" >{{ 'SHARED.VALIDATORS.EMAIL' | translate }}</small>
+  <small *ngIf="error.key === 'isTelephoneNumber' && input.touched" [class]="elementClass" >{{ 'SHARED.VALIDATORS.TELEPHONE_NUMBER' | translate }}</small>
+  <small *ngIf="error.key === 'length' && input.touched" [class]="elementClass" >{{ 'SHARED.VALIDATORS.LENGTH' | translate }}</small>
+  <small *ngIf="error.key === 'hasNumber' && input.touched" [class]="elementClass" >{{ 'SHARED.VALIDATORS.HAS_NUMBER' | translate }}</small>
+  <small *ngIf="error.key === 'hasCapitalCase' && input.touched" [class]="elementClass" >{{ 'SHARED.VALIDATORS.HAS_CAPITAL_CASE' | translate }}</small>
+  <small *ngIf="error.key === 'hasSmallCase' && input.touched" [class]="elementClass" >{{ 'SHARED.VALIDATORS.HAS_SMALL_CASE' | translate }}</small>
+  <small *ngIf="error.key === 'hasSpecialCharacters' && input.touched" [class]="elementClass" >{{ 'SHARED.VALIDATORS.HAS_SPECIAL_CHARACTERS' | translate }}</small>
+  <small *ngIf="error.key === 'noPasswordMatch' && input.touched" [class]="elementClass" >{{ 'SHARED.VALIDATORS.PASSWORD_NOT_MATCH' | translate }}</small>
+</div>

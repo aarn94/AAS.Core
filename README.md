@@ -1,2 +1,1 @@
-# AAS.Core
-Core package for client
+TripsTagger.Client
