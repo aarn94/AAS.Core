@@ -24,3 +24,8 @@ export const selectTheme = createSelector(
     selectCommon,
   (state: ICommonState) => state ? state.darkMode : false,
 );
+
+export const selectConfigLoaded = createSelector(
+  selectCommon,
+(state: ICommonState) => state ? state.configLoaded : false,
+);

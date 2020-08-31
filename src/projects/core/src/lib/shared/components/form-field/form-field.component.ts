@@ -1,6 +1,7 @@
 import { TitleCasePipe } from '@angular/common';
 import { AfterContentInit, Component, ContentChild, Input } from '@angular/core';
 import { FormControlName } from '@angular/forms';
+
 import { OnDestroyLifeCycle } from '../../classes';
 
 @Component({
@@ -13,7 +14,7 @@ export class FormFieldComponent extends OnDestroyLifeCycle implements AfterConte
   @ContentChild(FormControlName, {static : false}) input: FormControlName;
 
   @Input()
-  elementClass: string = "text-danger support-text";
+  elementClass: string = 'text-danger support-text';
 
   _inline: boolean;
   name: string;

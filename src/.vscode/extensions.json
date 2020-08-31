@@ -1,0 +1,14 @@
+{
+    "recommendations": [
+        "mikael.angular-beastcode",
+        "johnpapa.angular-essentials",
+        "cyrilletuzi.angular-schematics",
+        "HookyQR.beautify",
+        "kisstkondoros.vscode-codemetrics",
+        "editorconfig.editorconfig",
+        "jingkaizhao.vscode-redux-devtools",
+        "mrmlnc.vscode-scss",
+        "ms-vscode.vscode-typescript-tslint-plugin",
+        "rbbit.typescript-hero",
+    ]
+}

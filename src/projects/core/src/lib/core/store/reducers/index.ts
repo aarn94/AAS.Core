@@ -1,31 +1,19 @@
-import { ActionReducerMap, createFeatureSelector } from '@ngrx/store';
+import { createFeatureSelector } from '@ngrx/store';
 
-import { commonInitialState, commonReducer, ICommonState } from './common.reducer';
-import { INavigationState, navigationInitialState, navigationReducer } from './navigation.reducer';
-import { IAnalyticsState, analyticsnInitialState, analyticsReducer } from '../../modules/analytics/store/reducers';
-import { ITranslateState, translateInitialState, translateReducer } from '../../modules/translate/store/reducers';
+import { IAnalyticsState } from '../../modules/analytics/store/reducers';
+import { IAuthState } from '../../modules/auth/store/reducers/auth.reducer';
+import { ITranslateState } from '../../modules/translate/store/reducers';
+
+import { ICommonState } from './common.reducer';
+import { INavigationState } from './navigation.reducer';
 
 export interface ICoreState {
     navigation: INavigationState;
     analytics: IAnalyticsState;
     common: ICommonState;
     translate: ITranslateState;
+    auth: IAuthState;
 }
-
-export const coreInitialState: ICoreState = {
-  navigation: navigationInitialState,
-  common: commonInitialState,
-  analytics: analyticsnInitialState,
-  translate: translateInitialState,
-};
-
 export const CORE_FEATURE: string = 'core';
-
-export const coreReducers: ActionReducerMap<ICoreState> = {
-    navigation: navigationReducer,
-    analytics: analyticsReducer,
-    common: commonReducer,
-    translate: translateReducer,
-  };
 
 export const selectCore = createFeatureSelector<ICoreState>(CORE_FEATURE);

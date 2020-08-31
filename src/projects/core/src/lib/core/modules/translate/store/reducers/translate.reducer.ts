@@ -1,7 +1,7 @@
 import { Action, createReducer, on } from '@ngrx/store';
 
-import { TRANSLATE_ACTIONS } from '../actions';
 import { IProps } from '../../../../../state/interfaces';
+import { TRANSLATE_ACTIONS } from '../actions';
 
 export interface ITranslateState {
   language: string;

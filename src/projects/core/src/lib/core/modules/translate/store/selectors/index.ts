@@ -1,4 +1,1 @@
-import { selectLanguage } from './translate.selector';
-
-export const TRANSLATE_SELECTORS = {
-    selectLanguage};
+export * from './translate.selector';

@@ -1,5 +1,2 @@
-import { selectInitialized, selectLoading, selectTheme } from './common.selector';
-
-export const COMMON_SELECTORS = {
-    selectTheme, selectLoading, selectInitialized,
-};
+export * from './common.selector';
+export * from './navigation.selector';

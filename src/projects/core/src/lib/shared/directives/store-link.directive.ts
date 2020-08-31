@@ -1,8 +1,9 @@
 import { Directive, ElementRef, Input, Renderer2 } from '@angular/core';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { Store } from '@ngrx/store';
-import { NAVIGATION_ACTIONS } from '../../core/store/actions';
-import { IAppState } from '../../state/interfaces';
+
+import { go, replace } from '../../core/store/actions';
+import { IAASState } from '../../state/interfaces';
 
 @Directive({
   selector: '[aasStoreLink]',
@@ -13,7 +14,7 @@ export class StoreLinkDirective extends RouterLink {
 
   @Input() aasStoreLink: string;
 
-  constructor(private store: Store<IAppState>,
+  constructor(private store: Store<IAASState>,
               router: Router,
               route: ActivatedRoute,
               renderer: Renderer2,
@@ -24,9 +25,9 @@ export class StoreLinkDirective extends RouterLink {
 
   onClick(): boolean {
     if (this.enableBack) {
-      this.store.dispatch(NAVIGATION_ACTIONS.go({data:  [this.aasStoreLink]}));
+      this.store.dispatch(go({data:  [this.aasStoreLink]}));
     } else {
-      this.store.dispatch(NAVIGATION_ACTIONS.replace({data:  [this.aasStoreLink]}));
+      this.store.dispatch(replace({data:  [this.aasStoreLink]}));
     }
 
     return true;

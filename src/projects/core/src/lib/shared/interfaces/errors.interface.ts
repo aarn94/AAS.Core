@@ -5,5 +5,5 @@ export interface IAppError {
   }
 
 export function isAppError(arg: any): arg is IAppError {
-    return arg !== undefined && arg != null;
+    return arg !== undefined && arg != null && arg.code;
 }

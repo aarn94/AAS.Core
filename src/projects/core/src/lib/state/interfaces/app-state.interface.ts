@@ -1,7 +1,7 @@
-export interface IAppState {
+export interface IAASState {
     router: any;
 }
 
-export const defaultAppState: IAppState = {
+export const defaultAppState: IAASState = {
     router: {},
 };

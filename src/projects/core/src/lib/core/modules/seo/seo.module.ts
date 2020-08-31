@@ -1,24 +1,26 @@
 import { CommonModule } from '@angular/common';
-import { ModuleWithProviders, NgModule, Optional, SkipSelf, Injector } from '@angular/core';
+import { Injector, ModuleWithProviders, NgModule, Optional, SkipSelf } from '@angular/core';
 import { ConfigService } from '@ngx-config/core';
-import { MetaLoader, MetaModule } from '@ngx-meta/core';
+import { MetaGuard, MetaLoader, MetaService } from '@ngx-meta/core';
 import { TranslateService } from '@ngx-translate/core';
 
 import { TranslationModule } from '../translate';
 
 import { metaFactory } from './factories';
-import { MetaInitService, seoservices } from './services';
+import { MetaInitService, SeoService } from './services';
 
 // @dynamic
 @NgModule({
   declarations: [],
   providers: [
-    ...seoservices,
+    MetaInitService,
+    SeoService,
   ],
   imports: [
     CommonModule,
-    MetaModule.forRoot({}),
     TranslationModule,
+  ],
+  exports: [
   ],
 })
 export class SeoModule {
@@ -33,6 +35,8 @@ export class SeoModule {
     return {
       ngModule: SeoModule,
       providers: [
+        MetaGuard,
+        MetaService,
         {
           provide: MetaLoader,
           useFactory: metaFactory,

@@ -1,19 +1,20 @@
 import { CommonModule } from '@angular/common';
-import { ModuleWithProviders, NgModule, Optional, SkipSelf, Injector } from '@angular/core';
+import { Injector, ModuleWithProviders, NgModule, Optional, SkipSelf } from '@angular/core';
 import { ConfigService } from '@ngx-config/core';
-import { LogService } from '../../../shared/services';
-import { SharedModule } from '../../../shared';
 import { Angulartics2, Angulartics2Module, ANGULARTICS2_TOKEN } from 'angulartics2';
 import { Angulartics2GoogleAnalytics } from 'angulartics2/ga';
 import { Angulartics2RouterlessModule } from 'angulartics2/routerlessmodule';
 
+import { LogService } from '../../../core/services';
+import { AASSharedModule } from '../../../shared';
+
 import { analyticsLoader } from './factories';
-import { AnalyticsService, analyticsServices } from './services';
+import { AnalyticsService, GoogleAnalyticsInitService } from './services';
 
 @NgModule({
   imports: [
     CommonModule,
-    SharedModule,
+    AASSharedModule,
     Angulartics2Module.forRoot({
       pageTracking: {
         clearQueryParams: true,
@@ -24,7 +25,8 @@ import { AnalyticsService, analyticsServices } from './services';
   ],
   exports: [Angulartics2Module],
   providers: [
-    ...analyticsServices,
+    AnalyticsService,
+    GoogleAnalyticsInitService,
     Angulartics2,
     {
       provide: AnalyticsService,

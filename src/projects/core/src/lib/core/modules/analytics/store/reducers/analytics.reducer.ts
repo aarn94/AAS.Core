@@ -1,6 +1,6 @@
 import { Action, createReducer, on } from '@ngrx/store';
 
-import { ANALYTICS_ACTIONS } from '../actions';
+import { analyticsLoaded } from '../actions';
 
 export interface IAnalyticsState {
   analyticsInitialized: boolean;
@@ -12,7 +12,7 @@ const initialState: IAnalyticsState = {
 
 const _analyticsReducer = createReducer(
     initialState,
-    on(ANALYTICS_ACTIONS.analyticsLoaded, (state: IAnalyticsState) => {
+    on(analyticsLoaded, (state: IAnalyticsState) => {
       return {...state, analyticsInitialized:  true };
     }),
   );

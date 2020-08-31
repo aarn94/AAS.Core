@@ -1,14 +1,14 @@
-import { Component, OnInit, HostListener } from '@angular/core';
 import { ViewportScroller } from '@angular/common';
+import { Component, HostListener, OnInit } from '@angular/core';
 
 @Component({
   selector: 'aas-tap-to-top',
   templateUrl: './tap-to-top.component.html',
-  styleUrls: ['./tap-to-top.component.scss']
+  styleUrls: ['./tap-to-top.component.scss'],
 })
 export class TapToTopComponent implements OnInit {
 
-  public show: boolean = false;
+  show: boolean = false;
 
   constructor(private viewScroller: ViewportScroller) { }
 
@@ -16,18 +16,19 @@ export class TapToTopComponent implements OnInit {
   }
 
   // @HostListener Decorator
-  @HostListener("window:scroll", [])
-  onWindowScroll() {
-    let number = window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop || 0;
-  	if (number > 600) {
-  	  this.show = true;
-  	} else {
-  	  this.show = false;
-  	}
+  @HostListener('window:scroll', [])
+  onWindowScroll(): void {
+    const number: number = window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop || 0;
+
+    if(number > 600) {
+      this.show = true;
+    } else {
+      this.show = false;
+    }
   }
 
-  tapToTop() {
-  	this.viewScroller.scrollToPosition([0, 0]);
+  tapToTop(): void {
+    this.viewScroller.scrollToPosition([0, 0]);
   }
 
 }

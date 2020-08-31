@@ -1,29 +1,34 @@
 import { Action, createReducer, on } from '@ngrx/store';
 
-import { COMMON_ACTIONS } from '../actions';
+import { appStartedSuccess, configLoaded, loadingFinished, loadingStarted } from '../actions';
 
 export interface ICommonState {
     appInitialized: boolean;
     loading: boolean;
     darkMode: boolean;
+    configLoaded: boolean;
  }
 
 const initialState: ICommonState = {
     appInitialized: false,
     loading: false,
     darkMode: false,
+    configLoaded: false,
 };
 
 const _commonReducer = createReducer(
     initialState,
-    on(COMMON_ACTIONS.appStartedSuccess, (state: ICommonState) => {
+    on(appStartedSuccess, (state: ICommonState) => {
       return {...state, appInitialized: true};
     }),
-    on(COMMON_ACTIONS.loadingStarted, (state: ICommonState) => {
+    on(loadingStarted, (state: ICommonState) => {
       return {...state, loading: true};
     }),
-    on(COMMON_ACTIONS.loadingFinished, (state: ICommonState) => {
+    on(loadingFinished, (state: ICommonState) => {
       return {...state, loading: false};
+    }),
+    on(configLoaded, (state: ICommonState) => {
+      return {...state, configLoaded: true};
     }),
   );
 

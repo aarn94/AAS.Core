@@ -1,35 +1,35 @@
 import { CommonModule } from '@angular/common';
-import { SharedModule } from '../shared';
-import { NgModule, Optional, SkipSelf, ModuleWithProviders, Injector } from '@angular/core';
-import { CookieService, CookieBackendService } from '@gorniv/ngx-universal';
-import { ConfigLoader } from '@ngx-config/core';
-import { universalConfigLoader } from './factories';
+import { Injector, ModuleWithProviders, NgModule, Optional, SkipSelf } from '@angular/core';
 import { TransferState } from '@angular/platform-browser';
-import { TranslationServerModule } from './modules/translate';
+import { CookieBackendService, CookieService } from '@gorniv/ngx-universal';
+import { ConfigLoader } from '@ngx-config/core';
+
+import { AASSharedModule } from '../shared';
+
+import { universalConfigLoader } from './factories';
 import { AnalyticsServerModule } from './modules/analytics';
-
-
+import { TranslationServerModule } from './modules/translate';
 
 @NgModule({
   declarations: [],
   imports: [
     CommonModule,
-    SharedModule,
+    AASSharedModule,
     AnalyticsServerModule,
     TranslationServerModule,
   ],
 })
-export class CoreServerModule {
+export class AASCoreServerModule {
 
-  constructor(@Optional() @SkipSelf() parentModule: CoreServerModule) {
+  constructor(@Optional() @SkipSelf() parentModule: AASCoreServerModule) {
     if (parentModule) {
-      throw new Error('CoreModule is already  loaded. Import it in the AppModule only.');
+      throw new Error('AASCoreServerModule is already  loaded. Import it in the AppModule only.');
     }
   }
   // tslint:disable-next-line:no-any
-  static forRoot(configuredProviders: any[]): ModuleWithProviders<CoreServerModule> {
+  static forRoot(configuredProviders: any[]): ModuleWithProviders<AASCoreServerModule> {
     return {
-      ngModule: CoreServerModule,
+      ngModule: AASCoreServerModule,
       providers: [
         ...configuredProviders,
         { provide: CookieService, useClass: CookieBackendService },

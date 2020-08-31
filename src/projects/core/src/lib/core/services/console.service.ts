@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
-import { IConsole } from '../interfaces';
+
+import { IConsole } from '../../shared';
 
   // tslint:disable:no-any
 @Injectable()

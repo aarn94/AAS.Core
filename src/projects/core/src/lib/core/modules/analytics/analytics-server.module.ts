@@ -1,11 +1,13 @@
-import { ModuleWithProviders, NgModule, Optional, SkipSelf, Injector } from '@angular/core';
-import { SharedModule } from '../../../shared/shared.module';
-import { AnalyticsService } from './services';
+import { Injector, ModuleWithProviders, NgModule, Optional, SkipSelf } from '@angular/core';
+
+import { AASSharedModule } from '../../../shared/shared.module';
+
 import { analyticsServerLoader } from './factories';
+import { AnalyticsService } from './services';
 
 @NgModule({
   imports: [
-    SharedModule,
+    AASSharedModule,
   ],
   exports: [],
   providers: [
@@ -13,7 +15,7 @@ import { analyticsServerLoader } from './factories';
       provide: AnalyticsService,
       useFactory: analyticsServerLoader,
     },
-  ]
+  ],
 })
 export class AnalyticsServerModule {
 

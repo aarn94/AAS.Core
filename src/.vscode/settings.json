@@ -1,0 +1,16 @@
+{
+    "editor.autoIndent": "full",
+    "editor.codeActionsOnSave": {
+      "source.fixAll": true
+    },
+    "html.format.wrapAttributes": "force-aligned",
+    "codemetrics.nodeconfiguration.CaseClause": 0,
+    "codemetrics.nodeconfiguration.AnyKeyword": 100,
+    "codemetrics.basics.ComplexityLevelHigh": 15,
+    "cSpell.ignoreWords": [
+      "downlevel",
+      "esnext",
+      "ngrx"
+    ],
+    "javascript.implicitProjectConfig.experimentalDecorators": true,
+  }

@@ -1,6 +1,7 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { createAction, props } from '@ngrx/store';
-import { INotification, IAppError } from '../../../shared/interfaces';
+
+import { IAppError, INotification } from '../../../shared/interfaces';
 
 export const handleException = createAction(
     '[Common] Exception occurred',
@@ -51,3 +52,7 @@ export const modeLoadSuccess = createAction(
     '[Common] Mode load success',
     props<{data: boolean}>(),
   );
+
+export const configLoaded = createAction(
+  '[Common] Config loaded',
+)

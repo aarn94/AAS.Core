@@ -1,8 +1,9 @@
 import { Injectable } from '@angular/core';
 
-import { StorageService } from './storage.service';
+import { LogService } from '../../core/services';
 import { AnalyticsService } from '../modules/analytics/services';
-import { LogService } from '../../shared/services';
+
+import { StorageService } from './storage.service';
 
 @Injectable()
 export class ThemeService {

@@ -3,7 +3,7 @@ import { Inject, Injectable, PLATFORM_ID } from '@angular/core';
 import { Angulartics2GoogleAnalytics } from 'angulartics2/ga';
 import { Observable, of, Subscriber } from 'rxjs';
 
-import { LogService } from '../../../../shared/services/log.service';
+import { LogService } from '../../../../core/services';
 
 declare global {
   interface Window { ga: any; }

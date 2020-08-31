@@ -17,7 +17,7 @@ export class  WatchDogService {
 
         const watchdog: Observable<number> = timer(500);
 
-        return Observable.create(subject => {
+        return Observable.create((subject) => {
             func().pipe(takeUntil(watchdog)).subscribe((response: T) => {
               subject.next(response);
               subject.complete();

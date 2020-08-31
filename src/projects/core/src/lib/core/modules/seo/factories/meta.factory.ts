@@ -1,14 +1,14 @@
+import { Injector } from '@angular/core';
 import { ConfigService } from '@ngx-config/core';
 import { MetaStaticLoader, PageTitlePositioning } from '@ngx-meta/core';
 import { TranslateService } from '@ngx-translate/core';
 import { Observable, of } from 'rxjs';
 import { delay, switchMap } from 'rxjs/operators';
 
-import { MetaInitService } from '../services';
-import { Injector } from '@angular/core';
+import { defaultSeoUrl } from '../../../../shared/constants';
 import { ISeoSettings } from '../interfaces';
+import { MetaInitService } from '../services';
 import { SEO_SETTINGS } from '../tokens';
-import { defaultSeoUrl } from '../../../../defaults.model';
 
 function getText(translate: TranslateService, config: ConfigService, text: string): Observable<string> | string {
   if (text.startsWith('http')) {
@@ -26,7 +26,7 @@ function getText(translate: TranslateService, config: ConfigService, text: strin
 // tslint:disable-next-line:typedef
 export const metaFactory = (config: ConfigService, translate: TranslateService, metaInit: MetaInitService, injector: Injector) => {
 
-  const settings: ISeoSettings = injector.get(SEO_SETTINGS);
+  const settings: ISeoSettings = injector.get(SEO_SETTINGS, null);
 
   return new MetaStaticLoader({
     callback: (cur: string) => {

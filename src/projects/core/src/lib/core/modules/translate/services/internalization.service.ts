@@ -3,13 +3,13 @@ import { Injectable } from '@angular/core';
 import { ConfigService } from '@ngx-config/core';
 import { TranslateService } from '@ngx-translate/core';
 
+import { LogService, StorageService } from '../../../services';
+import { AnalyticsService } from '../../analytics/services';
+import { SeoService } from '../../seo/services';
 import { IConfLocale } from '../interfaces';
 
 import { LocaleService } from './locale.service';
-import { StorageService } from '../../../services';
-import { SeoService } from '../../seo/services';
-import { AnalyticsService } from '../../analytics/services';
-import { LogService } from 'projects/core/src/lib/shared/services';
+import { Observable } from 'rxjs';
 
 @Injectable()
 export class InternalizationService {
@@ -73,6 +73,10 @@ export class InternalizationService {
 
    getTranslation(str: string): string {
     return this.translate.instant(str);
+  }
+
+  getTranslation$(str: string): Observable<string> {
+    return this.translate.get(str);
   }
 
   getSupportedLanguages(): IConfLocale[] {

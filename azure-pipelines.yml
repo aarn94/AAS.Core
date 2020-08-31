@@ -1,41 +1,35 @@
-# Docker
-# Build and push an image to Azure Container Registry
-# https://docs.microsoft.com/azure/devops/pipelines/languages/docker
+# Node.js
+# Build a general Node.js project with npm.
+# Add steps that analyze code, save build artifacts, deploy, and more:
+# https://docs.microsoft.com/azure/devops/pipelines/languages/javascript
 
+variables:
+  Major: '0'
+  Minor: '1'
+  Patch: $[counter(variables['Minor'], 1)]
+  
 trigger:
 - master
 
-resources:
-- repo: self
+pool:
+  vmImage: 'ubuntu-latest'
 
-variables:
-  # Container registry service connection established during pipeline creation
-  dockerRegistryServiceConnection: '8a7da523-6275-423f-91cf-19897fa3e18b'
-  imageRepository: 'eshopadmin'
-  containerRegistry: 'aasolution.azurecr.io'
-  dockerfilePath: '$(Build.SourcesDirectory)/Dockerfile'
-  tag: '$(Build.BuildId)'
-  latestTag: 'latest'
-  
-  # Agent VM image name
-  vmImageName: 'ubuntu-latest'
+steps:
+- task: NodeTool@0
+  inputs:
+    versionSpec: '10.x'
+  displayName: 'Install Node.js'
 
-stages:
-- stage: Build
-  displayName: Build and push stage
-  jobs:  
-  - job: Build
-    displayName: Build
-    pool:
-      vmImage: $(vmImageName)
-    steps:
-    - task: Docker@2
-      displayName: Build and push an image to container registry
-      inputs:
-        command: buildAndPush
-        repository: $(imageRepository)
-        dockerfile: $(dockerfilePath)
-        containerRegistry: $(dockerRegistryServiceConnection)
-        tags: |
-          $(tag)
-          $(latestTag)
+- task: Bash@3
+  inputs:
+    filePath: 'build.sh'
+    arguments: '$(Major) $(Minor) $(Patch)'
+  displayName: 'Install Dependencies and build'
+
+
+- task: Npm@1
+  inputs:
+    command: publish
+    publishRegistry: useFeed
+    workingDir: src/dist/core
+    publishFeed: adrianadamiaksolutions

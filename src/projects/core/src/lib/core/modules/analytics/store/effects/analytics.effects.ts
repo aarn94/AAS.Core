@@ -1,29 +1,29 @@
-import { Injectable, Optional, Inject } from '@angular/core';
-import { COMMON_ACTIONS } from '../../../../store/actions';
+import { Inject, Injectable, Optional } from '@angular/core';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { Action } from '@ngrx/store';
 import { Observable, of } from 'rxjs';
 import { catchError, exhaustMap, map, take } from 'rxjs/operators';
 
+import { defaultAnalyticsEnabled, defaultAnalyticsWebTracker } from '../../../../../shared/constants';
+import { handleCriticalException } from '../../../../store/actions';
+import { IAnalyticsSettings } from '../../interfaces/analytics-settings.interface';
 import { GoogleAnalyticsInitService } from '../../services';
 import { AnalyticsService } from '../../services/analytics.service';
-import { ANALYTICS_ACTIONS } from '../actions';
 import { ANALYTICS_SETTINGS } from '../../tokens';
-import { IAnalyticsSettings } from '../../interfaces/analytics-settings.interface';
-import { defaultAnalyticsEnabled, defaultAnalyticsWebTracker } from '../../../../../defaults.model';
+import { analyticsLoaded, initAnalytics } from '../actions';
 
 @Injectable()
 export class AnalyticsEffects {
     initAnalytics$: Observable<Action> = createEffect(() =>
     this.actions$.pipe(
-      ofType(ANALYTICS_ACTIONS.initAnalytics),
-      exhaustMap(() => this.googleAnalyticsInit.loadScript(this.settings?.enabled ?? defaultAnalyticsEnabled, this.settings?.analyticsWebTrackerId ?? defaultAnalyticsWebTracker ).pipe(
+      ofType(initAnalytics),
+      exhaustMap(() => this.googleAnalyticsInit.loadScript(this.settings?.enabled ?? defaultAnalyticsEnabled, this.settings?.analyticsWebTrackerId ?? defaultAnalyticsWebTracker).pipe(
         take(1),
         map(() => {
-          return ANALYTICS_ACTIONS.analyticsLoaded();
+          return analyticsLoaded();
         }),
         catchError((error: Error) => {
-          return of(COMMON_ACTIONS.handleCriticalException({data: error.message}));
+          return of(handleCriticalException({data: error.message}));
         }),
       ),
     ),

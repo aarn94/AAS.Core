@@ -4,9 +4,9 @@ import { Action } from '@ngrx/store';
 import { Observable, of } from 'rxjs';
 import { delay, switchMap, tap } from 'rxjs/operators';
 
-import { languageModified, TRANSLATE_ACTIONS } from '../actions';
 import { IProps } from '../../../../../state/interfaces';
 import { InternalizationService } from '../../services';
+import { languageModified, TRANSLATE_ACTIONS } from '../actions';
 
 @Injectable()
 export class TranslateEffects {

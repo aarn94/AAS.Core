@@ -1,7 +1,8 @@
 import { isPlatformBrowser } from '@angular/common';
 import { Inject, Injectable, Optional, PLATFORM_ID } from '@angular/core';
 import { REQUEST } from '@nguniversal/express-engine/tokens';
-import { LogService } from '../../../../shared/services/log.service';
+
+import { LogService } from '../../../../core/services/log.service';
 
 // @dynamic
 @Injectable()

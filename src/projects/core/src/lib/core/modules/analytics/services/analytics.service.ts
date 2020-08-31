@@ -1,16 +1,16 @@
-import { Injectable, Optional, Inject } from '@angular/core';
+import { Inject, Injectable, Optional } from '@angular/core';
 import { ConfigService } from '@ngx-config/core';
-import { LogService } from '../../../../shared/services';
 import { Angulartics2 } from 'angulartics2';
 
+import { LogService } from '../../../../core/services';
+import { defaultAnalyticsEnabled } from '../../../../shared/constants';
 import { IAnalyticsProperties, IAnalyticsSettings } from '../interfaces';
 import { ANALYTICS_SETTINGS } from '../tokens';
-import { defaultAnalyticsEnabled } from '../../../../defaults.model';
 
 @Injectable()
 export class AnalyticsService {
   constructor(private readonly angulartics: Angulartics2, private log: LogService, private config: ConfigService,
-    @Optional() @Inject(ANALYTICS_SETTINGS) analyticsSettings: IAnalyticsSettings){
+              @Optional() @Inject(ANALYTICS_SETTINGS) analyticsSettings: IAnalyticsSettings) {
       const enabled: boolean = analyticsSettings?.enabled ?? defaultAnalyticsEnabled;
 
       this.devMode(enabled);
@@ -34,7 +34,10 @@ export class AnalyticsService {
 
   pageTrack(path: string): void {
     if (!this.devMode()) {
+      path = path.split('?')[0];
+
       this.log.debug('track page ' + path);
+
       this.angulartics.pageTrack.next({ path });
     }
   }

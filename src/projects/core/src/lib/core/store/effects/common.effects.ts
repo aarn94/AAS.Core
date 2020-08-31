@@ -5,48 +5,64 @@ import { Action } from '@ngrx/store';
 import { Observable, of } from 'rxjs';
 import { exhaustMap, switchMap, take, tap, withLatestFrom } from 'rxjs/operators';
 
-import { COMMON_ACTIONS } from '../actions';
-import { isAppError, IAppError, INotification } from '../../../shared/interfaces';
-import { IProps} from '../../../state/interfaces';
+import { IAppError, INotification, isAppError } from '../../../shared/interfaces';
+import { IProps } from '../../../state/interfaces';
+import { restoreLogin } from '../../modules/auth/store/actions';
 import { InternalizationService } from '../../modules/translate/services';
-import { NotificationService, ThemeService, LoaderService } from '../../services/index';
+import { LoaderService, NotificationService, ThemeService } from '../../services';
+import {
+  appStarted,
+  appStartedSuccess,
+  handleAppException,
+  handleCriticalException,
+  handleException,
+  loadingFinished,
+  loadingStarted,
+  modeLoad,
+  modeLoadSuccess,
+  modeModified,
+  notificationSent,
+  setInitialPath } from '../actions';
 
 @Injectable()
 export class CommonEffects {
 
   onAppStarted$: Observable<Action> = createEffect(() =>
     this.actions$.pipe(
-      ofType(COMMON_ACTIONS.appStarted),
+      ofType(appStarted),
       take(1),
       exhaustMap(() =>
       [
-        COMMON_ACTIONS.appStartedSuccess(),
+        restoreLogin(),
+        appStartedSuccess(),
+        setInitialPath({data: document.location.pathname.split('/')}),
       ],
     )));
 
     loadingStarted$: Observable<unknown> = createEffect(() =>
     this.actions$.pipe(
-      ofType(COMMON_ACTIONS.loadingStarted),
+      ofType(loadingStarted),
       tap(() => this.loadingService.show()),
     ), { dispatch: false },
     );
 
     loadingFinished$: Observable < unknown > = createEffect(() =>
     this.actions$.pipe(
-      ofType(COMMON_ACTIONS.loadingFinished),
+      ofType(loadingFinished),
       tap(() => this.loadingService.stop()),
     ), { dispatch: false },
   );
 
   handleException$: Observable<Action> = createEffect(() =>
     this.actions$.pipe(
-      ofType(COMMON_ACTIONS.handleException),
-      withLatestFrom(this.internalizationService.getTranslation('SHARED.TEXTS.COMMUNICATION_PROBLEM')),
-      exhaustMap(([result, error]: [IProps<HttpErrorResponse>, string]) => {
-        if (isAppError(result.data.error)) {
-          return of(COMMON_ACTIONS.handleAppException({data: result.data.error}));
+      ofType(handleException),
+      exhaustMap((result: IProps<HttpErrorResponse>) => {
+        if (isAppError(result?.data?.error)) {
+          return of(handleAppException({data: result.data.error}));
         } else {
-          return of(COMMON_ACTIONS.handleCriticalException({data: error}));
+          const error: string = this.internalizationService.getTranslation('SHARED.TEXTS.COMMUNICATION_PROBLEM');
+
+          return of(handleCriticalException({data: error}));
         }
       }),
     ),
@@ -54,21 +70,23 @@ export class CommonEffects {
 
   handleAppException$: Observable<IProps<IAppError>> = createEffect(() =>
     this.actions$.pipe(
-      ofType(COMMON_ACTIONS.handleAppException),
-      tap((error: IProps<IAppError>) => this.notificationService.showError(error.data.reason)),
+      ofType(handleAppException),
+      tap((error: IProps<IAppError>) => {
+        return this.notificationService.showError(error.data.reason, this.internalizationService.getTranslation('SHARED.TEXTS.ERROR'));
+      }),
     ), { dispatch: false },
   );
 
   handleCriticalException$: Observable<IProps<string>> = createEffect(() =>
     this.actions$.pipe(
-      ofType(COMMON_ACTIONS.handleCriticalException),
-      tap((error: IProps<string>) => this.notificationService.showError(error.data)),
+      ofType(handleCriticalException),
+      tap((error: IProps<string>) => this.notificationService.showError(error.data, this.internalizationService.getTranslation('SHARED.TEXTS.ERROR'))),
     ), { dispatch: false },
   );
 
   notificationSent$: Observable<IProps<INotification>> = createEffect(() =>
     this.actions$.pipe(
-      ofType(COMMON_ACTIONS.notificationSent),
+      ofType(notificationSent),
       tap((notification: IProps<INotification>) =>
       this.notificationService.showInfo(notification.data.message, notification.data.title)),
     ), { dispatch: false },
@@ -76,18 +94,18 @@ export class CommonEffects {
 
   loadTheme$: Observable<Action> = createEffect(() =>
     this.actions$.pipe(
-      ofType(COMMON_ACTIONS.modeLoad),
+      ofType(modeLoad),
       switchMap(() => {
        const theme: boolean = this.themeService.restoreTheme();
 
-       return of(COMMON_ACTIONS.modeLoadSuccess({data: theme}));
+       return of(modeLoadSuccess({data: theme}));
       }),
     ),
   );
 
   themeModified$: Observable<IProps<boolean>> = createEffect(() =>
     this.actions$.pipe(
-      ofType(COMMON_ACTIONS.modeModified),
+      ofType(modeModified),
       tap((lang: IProps<boolean>) =>
       this.themeService.saveTheme(lang.data)),
     ), { dispatch: false },

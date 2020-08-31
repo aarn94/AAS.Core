@@ -1,16 +1,37 @@
 import { Location } from '@angular/common';
-import { Injectable } from '@angular/core';
+import { Inject, Injectable, Optional } from '@angular/core';
 import { NavigationExtras, Router } from '@angular/router';
+import { LocalizeRouterService } from '@gilsdav/ngx-translate-router';
 
+import { defaultTranslateRouterEnabled } from '../../shared/constants/defaults.model';
 import { IGo } from '../interfaces';
+import { ITranslationSettings } from '../modules/translate/interfaces';
+import { TRANSLATION_SETTINGS } from '../modules/translate/tokens';
 
 @Injectable()
 export class RouterService {
 
-  constructor(private router: Router, private location: Location) { }
+  private localizeRoutesEnabled: boolean;
+
+  constructor(private router: Router, private location: Location, private localize: LocalizeRouterService,
+              @Optional() @Inject(TRANSLATION_SETTINGS)  translateSettings: ITranslationSettings) {
+      this.localizeRoutesEnabled = translateSettings?.routerEnabled ?? defaultTranslateRouterEnabled;
+     }
 
   go(data: IGo): void {
-    this.router.navigate(data.data, data.extras);
+    if (!this.localizeRoutesEnabled) {
+      this.router.navigate(data.data, data.extras);
+    } else {
+      const translatedPath: string | any[] = this.localize.translateRoute(data.data);
+
+      if (translatedPath instanceof String) {
+        this.router.navigate([translatedPath], data.extras);
+      } else {
+        this.router.navigate(translatedPath as any[], data.extras);
+      }
+
+    }
+
   }
 
   goWithReset(data: IGo): void {
@@ -19,7 +40,17 @@ export class RouterService {
       replaceUrl: true,
   };
 
-    this.router.navigate(data.data, replaceExtras);
+    if (!this.localizeRoutesEnabled) {
+      this.router.navigate(data.data, replaceExtras);
+    }
+
+    const translatedPath: string | any[] = this.localize.translateRoute(data.data);
+
+    if (translatedPath instanceof String) {
+      this.router.navigate([translatedPath], data.extras);
+    } else {
+      this.router.navigate(translatedPath as any[], data.extras);
+    }
   }
 
   forward(): void {

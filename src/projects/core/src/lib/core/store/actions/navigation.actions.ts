@@ -18,3 +18,8 @@ export const forward = createAction(
 export const back = createAction(
     '[Navigation] Back',
 );
+
+export const setInitialPath = createAction(
+  '[Navigation] Set Initial Path',
+  props<{data: string[]}>(),
+);

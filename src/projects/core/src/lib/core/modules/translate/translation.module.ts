@@ -1,17 +1,18 @@
 import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
-import { ModuleWithProviders, NgModule, Optional, SkipSelf, Injector } from '@angular/core';
+import { Injector, ModuleWithProviders, NgModule, Optional, SkipSelf } from '@angular/core';
 import { TransferState } from '@angular/platform-browser';
 import { TranslateLoader, TranslateModule } from '@ngx-translate/core';
 
 import { httpTranslateLoader } from './factories';
-import { translateservices } from './services';
+import { InternalizationService, LocaleService } from './services';
 
 // @dynamic
 @NgModule({
   declarations: [],
   providers: [
-    ...translateservices,
+    InternalizationService,
+    LocaleService,
   ],
   imports: [
     CommonModule,
