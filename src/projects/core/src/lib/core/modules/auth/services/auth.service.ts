@@ -1,10 +1,11 @@
 import { Injectable } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { BehaviorSubject, Observable, of } from 'rxjs';
-import { catchError, debounceTime, exhaustMap, filter, map, switchMap, take, throttleTime, withLatestFrom, tap } from 'rxjs/operators';
+import { catchError, debounceTime, exhaustMap, filter, map, switchMap, take, withLatestFrom } from 'rxjs/operators';
 
 import { IAASState } from '../../../../state/interfaces';
 import { StorageService } from '../../../services';
+import { LogService } from '../../../services';
 import { selectConfigLoaded } from '../../../store/selectors';
 import { AuthToken, IAuthToken, ITokenResponse } from '../interfaces';
 import { refreshTokenRemoved, refreshTokenUsed, tokenRemoved } from '../store/actions';
@@ -22,10 +23,11 @@ export class AuthService {
   private refreshTokenSubject: BehaviorSubject<AuthToken> = new BehaviorSubject<AuthToken>(null);
 
   constructor(private store: Store<IAASState>, private storageProvider: StorageService,
-              private authenticationService: AuthenticationService) {}
+              private authenticationService: AuthenticationService, private logService: LogService) {}
 
   isAuthenticated(): Observable<boolean> {
     return this.getToken().pipe(
+      take(1),
       map((token: IAuthToken) => {
         return !!token;
       }));
@@ -34,7 +36,10 @@ export class AuthService {
   getToken(): Observable<IAuthToken> {
     return this.store.select(selectConfigLoaded).
       pipe(filter((initialized: boolean) => initialized),
-      switchMap((e) => {
+      take(1),
+      switchMap((e: boolean) => {
+        this.logService.trace('get token with refreshing', 'auth');
+
         return this.getTokenWithRefreshing();
         }));
   }
@@ -68,11 +73,18 @@ export class AuthService {
   private getTokenWithRefreshing(): Observable<IAuthToken> {
     return this.store.select(selectToken).pipe(
       debounceTime(300),
+      take(1),
       withLatestFrom(this.store.select(selectRefreshToken)),
       exhaustMap(([value, refreshToken]: [IAuthToken, string]) => {
+        this.logService.trace('Get jwt token from store', 'auth');
+        this.logService.trace(value, 'auth');
         if (!value && !refreshToken) {
+          this.logService.trace('access token and refresh token not exists', 'auth');
+
           return of(null);
         } else if (value && !value.isExpired()) {
+          this.logService.trace('return token', 'auth');
+
           return of(value);
         } else {
           this.removeTokenIfExpired(value);
@@ -84,6 +96,9 @@ export class AuthService {
 
   private removeTokenIfExpired(token: IAuthToken): void {
     if (token?.isExpired()) {
+      this.logService.trace('token expired', 'auth');
+      this.logService.trace(Date.now(), 'auth');
+      this.logService.trace(token.exp * 1000, 'auth');
       this.store.dispatch(tokenRemoved());
       this.storageProvider.remove(this.userDataKey);
     }
@@ -93,14 +108,18 @@ export class AuthService {
     if (refreshToken) {
       if (!this.isRefreshing) {
         this.isRefreshing = true;
-
+        this.logService.trace('refreshing token', 'auth');
         return this.useRefreshToken(refreshToken);
 
       } else {
+        this.logService.trace('waiting for refresh token', 'auth');
+
         return this.refreshTokenSubject.pipe(
           take(2));
       }
     } else {
+      this.logService.trace('refresh token not exists', 'auth');
+
       of(null);
     }
   }

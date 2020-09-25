@@ -1,5 +1,4 @@
 import { CommonModule } from '@angular/common';
-import { HTTP_INTERCEPTORS } from '@angular/common/http';
 import { ModuleWithProviders, NgModule, Optional, SkipSelf } from '@angular/core';
 
 import { AASSharedModule } from '../../../shared';
@@ -7,7 +6,6 @@ import { InternalizationService } from '../translate/services';
 
 import { authTextsLoader } from './factories';
 import { AuthenticatedGuard, EmailGuard, EmailOrPhoneGuard, NotAuthenticatedGuard, PhoneGuard } from './guards';
-import { TokenInterceptor } from './interceptors';
 import { AuthenticationService, AuthService, AuthTextsService } from './services';
 
 @NgModule({
@@ -24,11 +22,6 @@ import { AuthenticationService, AuthService, AuthTextsService } from './services
     EmailOrPhoneGuard,
     AuthenticationService,
     AuthService,
-    {
-      provide: HTTP_INTERCEPTORS,
-      useClass: TokenInterceptor,
-      multi: true,
-    },
     {
       provide: AuthTextsService,
       useFactory: authTextsLoader,

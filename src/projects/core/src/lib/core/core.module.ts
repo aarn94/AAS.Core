@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { HttpClient, HTTP_INTERCEPTORS } from '@angular/common/http';
+import { HttpClient, HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { APP_INITIALIZER, ModuleWithProviders, NgModule, Optional, SkipSelf } from '@angular/core';
 import { Injector } from '@angular/core';
 import { BrowserTransferStateModule, TransferState } from '@angular/platform-browser';
@@ -15,24 +15,35 @@ import { ToastrModule } from 'ngx-toastr';
 import { AASSharedModule } from '../shared';
 
 import { configFactory, configInitializerFactory, store_init } from './factories';
-import { LanguageInterceptor } from './interceptors';
+import { BlobErrorHttpInterceptor, LanguageInterceptor } from './interceptors';
 import { AnalyticsModule } from './modules/analytics';
 import { AnalyticsEffects } from './modules/analytics/store/effects';
 import { analyticsReducer } from './modules/analytics/store/reducers';
+import { TokenInterceptor } from './modules/auth';
 import { AuthModule } from './modules/auth/auth.module';
-import { ForgetEffects, LoginEffects, SignUpEffects  } from './modules/auth/store/effects';
+import { ForgetEffects, LoginEffects, SignUpEffects } from './modules/auth/store/effects';
 import { authReducer } from './modules/auth/store/reducers';
 import { SeoModule } from './modules/seo';
 import { TranslationModule } from './modules/translate';
 import { TranslateEffects } from './modules/translate/store/effects';
 import { translateReducer } from './modules/translate/store/reducers';
-import { ConsoleService, LoaderService, LogService, NotificationService, RouterService, StorageService, ThemeService, WatchDogService } from './services';
+import {
+  AnonymousRequestsProvider,
+  ConsoleService,
+  LoaderService,
+  LogService,
+  NotificationService,
+  RouterService,
+  StorageService,
+  ThemeService,
+  WatchDogService,
+} from './services';
+import { ConfirmationService } from './services/confirmation.service';
 import { CommonEffects } from './store/effects/common.effects';
 import { NavigationEffects } from './store/effects/navigation.effects';
 import { CORE_FEATURE } from './store/reducers';
 import { commonReducer } from './store/reducers/common.reducer';
 import { navigationReducer } from './store/reducers/navigation.reducer';
-import { ConfirmationService } from './services/confirmation.service';
 
 // @dynamic
 @NgModule({
@@ -46,6 +57,7 @@ import { ConfirmationService } from './services/confirmation.service';
       progressBar: false,
       enableHtml: true,
     }),
+    HttpClientModule,
     TransferHttpModule,
     LoadingBarModule,
     LoadingBarHttpClientModule,
@@ -89,6 +101,7 @@ import { ConfirmationService } from './services/confirmation.service';
     ConsoleService,
     TransferHttpService,
     ConfirmationService,
+    AnonymousRequestsProvider,
   ],
 })
 export class AASCoreModule {
@@ -134,8 +147,17 @@ export class AASCoreModule {
           useClass: LanguageInterceptor,
           multi: true,
         },
+        {
+          provide: HTTP_INTERCEPTORS,
+          useClass: BlobErrorHttpInterceptor,
+          multi: true,
+        },
+        {
+          provide: HTTP_INTERCEPTORS,
+          useClass: TokenInterceptor,
+          multi: true,
+        },
       ],
     };
   }
 }
-

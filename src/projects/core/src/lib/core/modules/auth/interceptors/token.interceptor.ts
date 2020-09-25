@@ -1,9 +1,10 @@
 import { HttpErrorResponse, HttpEvent, HttpHandler, HttpInterceptor, HttpRequest } from '@angular/common/http';
 import { Inject, Injectable, Optional } from '@angular/core';
 import { Observable, throwError } from 'rxjs';
-import { catchError, switchMap, take } from 'rxjs/operators';
+import { catchError, switchMap, take, tap } from 'rxjs/operators';
 
 import { defaultAuthorizationEnabled } from '../../../../shared/constants';
+import { LogService } from '../../../services';
 import { IAuthSettings, IAuthToken } from '../interfaces';
 import { AuthService } from '../services';
 import { AUTH_SETTINGS } from '../tokens';
@@ -13,11 +14,14 @@ export class TokenInterceptor implements HttpInterceptor {
 
   private enabled: boolean;
 
-  constructor(public authService: AuthService, @Optional() @Inject(AUTH_SETTINGS) authSettings: IAuthSettings) {
+  constructor(public authService: AuthService, @Optional()
+              @Inject(AUTH_SETTINGS) authSettings: IAuthSettings, private logService: LogService) {
     this.enabled = authSettings?.enabled ?? defaultAuthorizationEnabled;
   }
 
   intercept(req: HttpRequest<unknown>, next: HttpHandler): Observable<HttpEvent<unknown>> {
+    this.logService.trace('Start request', 'auth');
+    this.logService.trace(req, 'auth');
     if (!this.enabled) {
       return next.handle(req);
     }
@@ -25,6 +29,9 @@ export class TokenInterceptor implements HttpInterceptor {
     return this.authService.getToken().pipe(
       take(1),
       switchMap((token: IAuthToken) => {
+        this.logService.trace('Token interceptor with token', 'auth');
+        this.logService.trace(req, 'auth');
+        this.logService.trace(token, 'auth');
         if (token) {
           return this.handleWithUnauthorized(this.addToken(req, token.token), next);
         } else {

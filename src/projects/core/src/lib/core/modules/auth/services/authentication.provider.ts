@@ -7,7 +7,7 @@ import { Observable } from 'rxjs';
 import { finalize } from 'rxjs/operators';
 
 import { defaultAuthorizationEnabled, defaultAuthorizedRedirectTo, defaultUnAuthorizedRedirectTo } from '../../../../shared/constants';
-import { getOptions } from '../../../../shared/functions';
+import { getAnonymousOptions, getOptions } from '../../../../shared/functions';
 import { IAASState } from '../../../../state/interfaces/app-state.interface';
 import { loadingFinished, loadingStarted } from '../../../store/actions';
 import {
@@ -53,7 +53,7 @@ export class AuthenticationService {
     return this.httpClient.post<ITokenResponse>(
       this.getUrl() + 'sign-in',
       request,
-      getOptions(),
+      getAnonymousOptions(),
     ).pipe(
       finalize(() => this.store.dispatch(loadingFinished())),
     );
@@ -90,7 +90,7 @@ export class AuthenticationService {
     return this.httpClient.post(
       this.getUrl() + 'sign-up',
       request,
-      getOptions(),
+      getAnonymousOptions(),
     ).pipe(
       finalize(() => this.store.dispatch(loadingFinished())),
     );
@@ -102,7 +102,7 @@ export class AuthenticationService {
     return this.httpClient.post(
       this.getUrl() + 'confirm-phone-number',
       request,
-      getOptions(),
+      getAnonymousOptions(),
     ).pipe(
       finalize(() => this.store.dispatch(loadingFinished())),
     );
@@ -114,7 +114,7 @@ export class AuthenticationService {
     return this.httpClient.post(
       this.getUrl() + 'confirm-email',
       request,
-      getOptions(),
+      getAnonymousOptions(),
     ).pipe(
       finalize(() => this.store.dispatch(loadingFinished())),
     );
@@ -126,7 +126,7 @@ export class AuthenticationService {
     return this.httpClient.post(
       this.getUrl() + 'resend-confirmation-email',
       request,
-      getOptions(),
+      getAnonymousOptions(),
     ).pipe(
       finalize(() => this.store.dispatch(loadingFinished())),
     );
@@ -138,7 +138,7 @@ export class AuthenticationService {
     return this.httpClient.post(
       this.getUrl() + 'resend-confirmation-sms',
       request,
-      getOptions(),
+      getAnonymousOptions(),
     ).pipe(
       finalize(() => this.store.dispatch(loadingFinished())),
     );
@@ -150,7 +150,7 @@ export class AuthenticationService {
     return this.httpClient.post(
       this.getUrl() + 'forget-password',
       request,
-      getOptions(),
+      getAnonymousOptions(),
     ).pipe(
       finalize(() => this.store.dispatch(loadingFinished())),
     );
@@ -162,7 +162,7 @@ export class AuthenticationService {
     return this.httpClient.post(
       this.getUrl() + 'reset-password',
       request,
-      getOptions(),
+      getAnonymousOptions(),
     ).pipe(
       finalize(() => this.store.dispatch(loadingFinished())),
     );

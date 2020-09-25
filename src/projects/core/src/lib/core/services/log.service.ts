@@ -21,6 +21,15 @@ export class LogService {
     }
   }
 
+  trace(msg: any, module: string): void {
+    const level: LogLevel = this.config.getSettings('logging.level', this.defaultLevel);
+    const modules: string[] = this.config.getSettings('logging.traces', []);
+
+    if (IsAtLeast(LogLevel.Trace, level) && modules.includes(module)) {
+      this.logger.log(msg);
+    }
+  }
+
   // error
   error(err: any): void {
     const level: LogLevel = this.config.getSettings('logging.level', this.defaultLevel);

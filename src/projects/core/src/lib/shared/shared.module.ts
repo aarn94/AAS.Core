@@ -1,6 +1,5 @@
 
 import { CommonModule } from '@angular/common';
-import { HttpClientModule } from '@angular/common/http';
 import { NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
@@ -11,9 +10,10 @@ import { LoadingBarComponent, LoadingBarModule } from '@ngx-loading-bar/core';
 import { TranslateModule } from '@ngx-translate/core';
 import { Angulartics2Module } from 'angulartics2';
 
-import { FeatherIconsComponent, FormFieldComponent, TapToTopComponent } from './components';
+import { FullWidthComponent, FeatherIconsComponent, FormFieldComponent, TapToTopComponent } from './components';
 import { DebounceClickDirective, StoreLinkDirective } from './directives';
 import { SortPipe } from './pipes';
+import { EnumToArrayPipe } from './pipes/enum-to-array.pipe';
 
 @NgModule({
   declarations: [
@@ -23,16 +23,18 @@ import { SortPipe } from './pipes';
     TapToTopComponent,
     FeatherIconsComponent,
     SortPipe,
+    EnumToArrayPipe,
+    FullWidthComponent,
   ],
   providers: [
     SortPipe,
+    EnumToArrayPipe,
   ],
   imports: [
     CommonModule,
     TranslateModule,
     Angulartics2Module,
     RouterModule,
-    HttpClientModule,
     ContentLoaderModule,
     LoadingBarModule,
     ReactiveComponentModule,
@@ -43,7 +45,6 @@ import { SortPipe } from './pipes';
     ReactiveFormsModule,
     RouterModule,
     TranslateModule,
-    HttpClientModule,
     Angulartics2Module,
     ReactiveComponentModule,
     ContentLoaderModule,
@@ -53,8 +54,10 @@ import { SortPipe } from './pipes';
     TapToTopComponent,
     FeatherIconsComponent,
     LoadingBarComponent,
+    FullWidthComponent,
     FontAwesomeModule,
     SortPipe,
+    EnumToArrayPipe,
   ],
 })
-export class AASSharedModule {}
+export class AASSharedModule { }
