@@ -8,8 +8,6 @@ import { switchMap } from 'rxjs/operators';
 import { handleAppException, handleCriticalException, handleException, loadingFinished, loadingStarted } from '../../core/store/actions';
 import { isAppError } from '../../shared/interfaces';
 
-
-
 @Injectable()
 export class DataStoreEffects {
 
@@ -92,3 +90,5 @@ export class DataStoreEffects {
   ) {}
 
 }
+
+export * from './combine.reducer';

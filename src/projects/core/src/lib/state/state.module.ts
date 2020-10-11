@@ -8,6 +8,7 @@ import { StoreDevtoolsModule } from '@ngrx/store-devtools';
 
 import { getInitialState } from './functions';
 import { DataStoreEffects } from './store';
+import { combineReducers } from './store/combine.reducer';
 
 @NgModule({
   declarations: [],
@@ -22,6 +23,7 @@ import { DataStoreEffects } from './store';
           strictActionImmutability: true,
         },
         initialState: getInitialState,
+        reducerFactory: combineReducers,
       },
     ),
     StoreRouterConnectingModule.forRoot({
