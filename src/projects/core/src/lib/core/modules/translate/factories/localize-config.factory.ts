@@ -6,9 +6,13 @@ import { makeStateKey, StateKey, TransferState } from '@angular/platform-browser
 import { Routes } from '@angular/router';
 import { LocalizeParser, LocalizeRouterSettings } from '@gilsdav/ngx-translate-router';
 import { TranslateService } from '@ngx-translate/core';
-import { readFileSync } from 'fs';
 
-import { defaultBrowserAssetsPath, defaultTranslateRouterConfigName, defaultTranslateRouterConfigPathInAssets, defaultTranslateRouterEnabled } from '../../../../shared/constants';
+import {
+  defaultBrowserAssetsPath,
+   defaultTranslateRouterConfigName,
+   defaultTranslateRouterConfigPathInAssets,
+   defaultTranslateRouterEnabled,
+  } from '../../../../shared/constants';
 import { IAssetsSettings } from '../../../interfaces';
 import { ASSETS_SETTINGS } from '../../../tokens';
 import { ITranslationSettings } from '../interfaces';
@@ -30,12 +34,11 @@ export class LocalizeConfigLoader extends LocalizeParser {
       this.enabled = translationSettings?.routerEnabled ?? defaultTranslateRouterEnabled;
       this.assetsPath = assetsSettings?.browserPath ?? defaultBrowserAssetsPath;
       this.configPathInAssets = translationSettings?.configLocationInAssets ?? defaultTranslateRouterConfigPathInAssets;
-      this.baseConfigName = translationSettings?.routerLocaleFileName  ?? defaultTranslateRouterConfigName;
-      this.fullPath = `${this.assetsPath}${this.configPathInAssets}`;
+      this.baseConfigName = translationSettings?.routerLocaleFileName ?? defaultTranslateRouterConfigName;
+      this.fullPath = `${this.assetsPath}${this.configPathInAssets}\\`;
     }
 
   load(routes: Routes): Promise<any> {
-
     return new Promise((resolve: any) => {
       if (!this.enabled) {
 
@@ -55,6 +58,7 @@ export class LocalizeConfigLoader extends LocalizeParser {
 
           this.init(routes).then(resolve);
         } else {
+
           const baseConfigPath: string = `${this.fullPath}${this.baseConfigName}`;
 
           this.http.get(baseConfigPath).subscribe((file: any) => {

@@ -10,10 +10,9 @@ import { LoadingBarComponent, LoadingBarModule } from '@ngx-loading-bar/core';
 import { TranslateModule } from '@ngx-translate/core';
 import { Angulartics2Module } from 'angulartics2';
 
-import { FullWidthComponent, FeatherIconsComponent, FormFieldComponent, TapToTopComponent } from './components';
-import { DebounceClickDirective, StoreLinkDirective } from './directives';
-import { SortPipe } from './pipes';
-import { EnumToArrayPipe } from './pipes/enum-to-array.pipe';
+import { FeatherIconsComponent, FormFieldComponent, FullWidthComponent, TapToTopComponent } from './components';
+import { DebounceClickDirective, MoveToHeadDirective, StoreLinkDirective } from './directives';
+import { EnumToArrayPipe, SafeHtmlPipe, SafeUrlPipe, SortPipe } from './pipes';
 
 @NgModule({
   declarations: [
@@ -23,8 +22,11 @@ import { EnumToArrayPipe } from './pipes/enum-to-array.pipe';
     TapToTopComponent,
     FeatherIconsComponent,
     SortPipe,
+    SafeUrlPipe,
     EnumToArrayPipe,
     FullWidthComponent,
+    SafeHtmlPipe,
+    MoveToHeadDirective,
   ],
   providers: [
     SortPipe,
@@ -58,6 +60,9 @@ import { EnumToArrayPipe } from './pipes/enum-to-array.pipe';
     FontAwesomeModule,
     SortPipe,
     EnumToArrayPipe,
+    SafeHtmlPipe,
+    SafeUrlPipe,
+    MoveToHeadDirective,
   ],
 })
 export class AASSharedModule { }

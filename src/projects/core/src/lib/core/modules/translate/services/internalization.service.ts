@@ -2,6 +2,7 @@
 import { Injectable } from '@angular/core';
 import { ConfigService } from '@ngx-config/core';
 import { TranslateService } from '@ngx-translate/core';
+import { Observable } from 'rxjs';
 
 import { LogService, StorageService } from '../../../services';
 import { AnalyticsService } from '../../analytics/services';
@@ -9,12 +10,12 @@ import { SeoService } from '../../seo/services';
 import { IConfLocale } from '../interfaces';
 
 import { LocaleService } from './locale.service';
-import { Observable } from 'rxjs';
 
 @Injectable()
 export class InternalizationService {
 
   private langKey: string = 'currentLanguage';
+  private traceKey: string = 'lang';
 
   constructor(private storageProvider: StorageService, private localeService: LocaleService,
               private translate: TranslateService, private seo: SeoService, private conf: ConfigService, private logService: LogService,
@@ -25,28 +26,38 @@ export class InternalizationService {
     const languages: IConfLocale[] = this.getSupportedLanguages();
     const cultures: string = languages.map((cur: IConfLocale) => cur.culture).toString();
 
+    this.logService.trace('loaded default cultures from config', this.traceKey);
+    this.logService.trace(cultures, this.traceKey);
+
     this.translate.addLangs(this.getSupportedCodes(languages));
     this.translate.setDefaultLang(this.getDefaultLocale().code);
-
-    this.logService.debug('loaded default cultures from config ' + cultures);
 
     const langData: string = this.storageProvider.getString(this.langKey);
 
     if (!langData) {
-      const selectedDefault: string = this.getDefaultLanguage();
+      const selectedDefault: IConfLocale = this.getDefaultLanguage();
 
-      this.translate.use(selectedDefault);
+      this.translate.use(selectedDefault.code).subscribe(() => {
 
-      this.logService.debug('use default language ' + selectedDefault);
+        this.logService.trace('set locale tags', this.traceKey);
 
-      return selectedDefault;
+        this.seo.setTag('og:locale', selectedDefault.culture);
+        this.seo.setTag('og:locale:alternate', cultures);
+      });
+
+      this.logService.debug('use default language ' + selectedDefault.code);
+
+      return selectedDefault.code;
     }
 
     const targetLanguage: IConfLocale = this.getLocaleOrDefault(langData);
 
-    this.logService.debug('setting restore culture ' + targetLanguage.culture);
+    this.logService.debug('restore culture ' + targetLanguage.culture);
 
     this.translate.use(targetLanguage.code).subscribe(() => {
+
+      this.logService.trace('set locale tags', this.traceKey);
+
       this.seo.setTag('og:locale', targetLanguage.culture);
       this.seo.setTag('og:locale:alternate', cultures);
     });
@@ -88,11 +99,11 @@ export class InternalizationService {
      this.getSupportedLanguages().map((locale: IConfLocale) => locale.code);
  }
 
-  private getDefaultLanguage(): string {
+  private getDefaultLanguage(): IConfLocale {
     const locale: string = this.localeService.getCurrentLocale();
     const targetDefault: IConfLocale = this.getLocaleOrDefault(locale);
 
-    return targetDefault.code;
+    return targetDefault;
   }
 
   private getLocaleOrDefault(locale: string): IConfLocale {

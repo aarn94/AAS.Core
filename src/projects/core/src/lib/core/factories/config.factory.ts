@@ -6,10 +6,10 @@ import { forkJoin } from 'rxjs';
 import { map } from 'rxjs/operators';
 
 import { defaultBrowserAssetsPath, defaultConfigEnabled, defaultConfigName, defaultConfigPathInAssets } from '../../shared/constants';
-import { IAssetsSettings, IConfigurationSettings } from '../interfaces';
-import { ASSETS_SETTINGS, CONFIG_SETTINGS } from '../tokens';
 import { createHttpClient } from '../functions';
+import { IAssetsSettings, IConfigurationSettings } from '../interfaces';
 import { TokenInterceptor } from '../modules/auth';
+import { ASSETS_SETTINGS, CONFIG_SETTINGS } from '../tokens';
 
 export class AppConfigLoader implements ConfigLoader {
 
@@ -30,7 +30,7 @@ export class AppConfigLoader implements ConfigLoader {
       this.configPathInAssets = configSettings?.configLocationInAssets ?? defaultConfigPathInAssets;
       this.configFileName = configSettings?.configFileName ?? defaultConfigName;
       this.assetsPath = assetsSettings?.browserPath ?? defaultBrowserAssetsPath;
-      this.fullPath = `${this.assetsPath}${this.configPathInAssets}`;
+      this.fullPath = `${this.assetsPath}${this.configPathInAssets}\\`;
   }
 
   loadSettings(): any {

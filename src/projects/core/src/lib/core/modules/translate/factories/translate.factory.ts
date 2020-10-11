@@ -25,7 +25,7 @@ class BrowserTranslateLoader extends TranslateLoader {
      this.assetsPath = assetsSettings?.browserPath ?? defaultBrowserAssetsPath ;
      this.configPathInAssets = translationSettings?.configLocationInAssets ?? defaultTranslatePathInAssets;
      this.enabled = translationSettings?.enabled ?? defaultTranslateEnabled;
-     this.fullPath = `${this.assetsPath}${this.configPathInAssets}`;
+     this.fullPath = `${this.assetsPath}${this.configPathInAssets}\\`;
 
   }
   getTranslation(lang: string): Observable<unknown> {

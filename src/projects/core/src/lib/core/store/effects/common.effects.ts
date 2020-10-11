@@ -1,14 +1,15 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
-import { Action } from '@ngrx/store';
+import { Action, Store } from '@ngrx/store';
 import { Observable, of } from 'rxjs';
-import { exhaustMap, switchMap, take, tap, withLatestFrom } from 'rxjs/operators';
+import { exhaustMap, skipWhile, switchMap, take, tap } from 'rxjs/operators';
 
 import { IAppError, INotification, isAppError } from '../../../shared/interfaces';
-import { IProps } from '../../../state/interfaces';
+import { IAASState, IProps } from '../../../state/interfaces';
 import { restoreLogin } from '../../modules/auth/store/actions';
 import { InternalizationService } from '../../modules/translate/services';
+import { languageload, languageloadSuccess } from '../../modules/translate/store/actions';
 import { LoaderService, NotificationService, ThemeService } from '../../services';
 import {
   appStarted,
@@ -22,14 +23,27 @@ import {
   modeLoadSuccess,
   modeModified,
   notificationSent,
-  setInitialPath } from '../actions';
+  setInitialPath,
+} from '../actions';
+import { selectConfigLoaded } from '../selectors';
 
 @Injectable()
 export class CommonEffects {
 
   onAppStarted$: Observable<Action> = createEffect(() =>
+  this.actions$.pipe(
+    ofType(appStarted),
+    switchMap(() => this.store.select(selectConfigLoaded).pipe(skipWhile((initialized: boolean) => !initialized))),
+    take(1),
+    exhaustMap(() =>
+    [
+      languageload(),
+    ],
+  )));
+
+  onAppStarted2$: Observable<Action> = createEffect(() =>
     this.actions$.pipe(
-      ofType(appStarted),
+      ofType(languageloadSuccess),
       take(1),
       exhaustMap(() =>
       [
@@ -112,5 +126,6 @@ export class CommonEffects {
   );
 
 constructor(private actions$: Actions, private notificationService: NotificationService, private themeService: ThemeService,
-            private loadingService: LoaderService, private internalizationService: InternalizationService) {  }
+            private loadingService: LoaderService, private internalizationService: InternalizationService,
+            private store: Store<IAASState>) {  }
 }

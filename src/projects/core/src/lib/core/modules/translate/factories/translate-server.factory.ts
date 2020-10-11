@@ -2,6 +2,7 @@ import { Injector } from '@angular/core';
 import { makeStateKey, StateKey, TransferState } from '@angular/platform-browser';
 import { TranslateLoader } from '@ngx-translate/core';
 import { readFileSync } from 'fs';
+import { join } from 'path';
 import { Observable, Observer } from 'rxjs';
 
 import { defaultServerAssetsPath, defaultTranslateEnabled, defaultTranslatePathInAssets } from '../../../../shared/constants';
@@ -34,8 +35,7 @@ class ServerTranslateLoader extends TranslateLoader {
         observer.next({});
         observer.complete();
       } else {
-
-        const path: string = `${this.fullPath}${lang}.json`;
+        const path: string = join(this.fullPath, `${lang}.json`);
         const data: string = JSON.parse(readFileSync(path, 'utf8'));
         const key: StateKey<number> = makeStateKey<number>(`transfer-translate-${lang}`);
 

@@ -1,5 +1,5 @@
 import * as fromRouter from '@ngrx/router-store';
-import { createSelector, createFeatureSelector } from '@ngrx/store';
+import { createFeatureSelector, createSelector } from '@ngrx/store';
 
 import { ICoreState, selectCore } from '../reducers';
 import { INavigationState } from '../reducers/navigation.reducer';
@@ -30,7 +30,6 @@ export const selectPreviousUrl = createSelector(
   selectNavigation,
   (state: INavigationState) => state && state.previousPath?.join('/'),
 );
-
 
 export const selectRouter = createFeatureSelector<any, fromRouter.RouterReducerState<any>>('router');
 

@@ -2,6 +2,7 @@ import { Injector } from '@angular/core';
 import { makeStateKey, StateKey, TransferState } from '@angular/platform-browser';
 import { ConfigLoader } from '@ngx-config/core';
 import { readFileSync } from 'fs';
+import { join } from 'path';
 
 import { defaultBaseConfigName, defaultConfigEnabled, defaultConfigName, defaultConfigPathInAssets, defaultServerAssetsPath } from '../../shared/constants';
 import { IAssetsSettings, IConfigurationSettings } from '../interfaces';
@@ -24,7 +25,7 @@ export class SsrAppConfigLoader implements ConfigLoader {
       this.configFileName = configSettings?.configFileName ?? defaultConfigName;
       this.assetsPath = assetsSettings?.serverPath ?? defaultServerAssetsPath;
       this.fullPath = `${this.assetsPath}${this.configPathInAssets}`;
-      this.baseConfigName = configSettings?.configBaseFileName  ?? defaultBaseConfigName;
+      this.baseConfigName = configSettings?.configBaseFileName ?? defaultBaseConfigName;
     }
 
   loadSettings(): any {
@@ -33,9 +34,8 @@ export class SsrAppConfigLoader implements ConfigLoader {
       if (!this.configEnabled) {
         resolve({});
       } else {
-        const dataBase: any = JSON.parse(readFileSync(this.fullPath + this.baseConfigName, 'utf8'));
-        const data: any = JSON.parse(readFileSync(this.fullPath + this.configFileName, 'utf8'));
-
+        const dataBase: any = JSON.parse(readFileSync(join(this.fullPath, this.baseConfigName), 'utf8') ?? '{}');
+        const data: any = JSON.parse(readFileSync(join(this.fullPath, this.configFileName), 'utf8') ?? '{}');
         const merged: string = {...dataBase, ...data};
 
         const key: StateKey<number> = makeStateKey<number>(`transfer-config`);

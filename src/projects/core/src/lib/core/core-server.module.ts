@@ -9,6 +9,7 @@ import { AASSharedModule } from '../shared';
 import { universalConfigLoader } from './factories';
 import { AnalyticsServerModule } from './modules/analytics';
 import { TranslationServerModule } from './modules/translate';
+import { NotificationService, ServerNotificationService } from './services';
 
 @NgModule({
   declarations: [],
@@ -33,6 +34,7 @@ export class AASCoreServerModule {
       providers: [
         ...configuredProviders,
         { provide: CookieService, useClass: CookieBackendService },
+        { provide: NotificationService, useClass: ServerNotificationService },
         {
           provide: ConfigLoader,
           useFactory: universalConfigLoader,

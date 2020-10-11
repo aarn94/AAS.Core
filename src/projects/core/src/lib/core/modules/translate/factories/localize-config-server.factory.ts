@@ -6,8 +6,14 @@ import { Routes } from '@angular/router';
 import { LocalizeParser, LocalizeRouterSettings } from '@gilsdav/ngx-translate-router';
 import { TranslateService } from '@ngx-translate/core';
 import { readFileSync } from 'fs';
+import { join } from 'path';
 
-import { defaultServerAssetsPath, defaultTranslateRouterConfigName, defaultTranslateRouterConfigPathInAssets, defaultTranslateRouterEnabled } from '../../../../shared/constants';
+import {
+  defaultServerAssetsPath,
+  defaultTranslateRouterConfigName,
+  defaultTranslateRouterConfigPathInAssets,
+  defaultTranslateRouterEnabled,
+} from '../../../../shared/constants';
 import { IAssetsSettings } from '../../../interfaces';
 import { ASSETS_SETTINGS } from '../../../tokens';
 import { ITranslationSettings } from '../interfaces';
@@ -29,7 +35,7 @@ export class LocalizeConfigServerLoader extends LocalizeParser {
       this.enabled = translationSettings?.routerEnabled ?? defaultTranslateRouterEnabled;
       this.assetsPath = assetsSettings?.serverPath ?? defaultServerAssetsPath;
       this.configPathInAssets = translationSettings?.configLocationInAssets ?? defaultTranslateRouterConfigPathInAssets;
-      this.baseConfigName = translationSettings?.routerLocaleFileName  ?? defaultTranslateRouterConfigName;
+      this.baseConfigName = translationSettings?.routerLocaleFileName ?? defaultTranslateRouterConfigName;
       this.fullPath = `${this.assetsPath}${this.configPathInAssets}`;
     }
 
@@ -42,12 +48,13 @@ export class LocalizeConfigServerLoader extends LocalizeParser {
 
         this.init(routes).then(resolve);
       } else {
-        const dataBase: any = JSON.parse(readFileSync(this.fullPath + this.baseConfigName, 'utf8'));
+        const dataBase: any = JSON.parse(readFileSync(join(this.fullPath, this.baseConfigName), 'utf8'));
         const key: StateKey<number> = makeStateKey<number>(`router-locale-config`);
 
         this.transfer.set(key, dataBase);
 
         this.locales = dataBase.i18n.locales;
+
         this.prefix = dataBase.i18n.prefix;
         this.init(routes).then(resolve);
       }

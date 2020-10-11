@@ -14,7 +14,7 @@ export class RouterService {
   private localizeRoutesEnabled: boolean;
 
   constructor(private router: Router, private location: Location, private localize: LocalizeRouterService,
-              @Optional() @Inject(TRANSLATION_SETTINGS)  translateSettings: ITranslationSettings) {
+              @Optional() @Inject(TRANSLATION_SETTINGS) translateSettings: ITranslationSettings) {
       this.localizeRoutesEnabled = translateSettings?.routerEnabled ?? defaultTranslateRouterEnabled;
      }
 
