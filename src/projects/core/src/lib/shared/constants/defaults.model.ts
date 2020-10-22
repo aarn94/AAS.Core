@@ -14,6 +14,7 @@ export const defaultTranslateEnabled: boolean = false;
 export const defaultTranslateRouterEnabled: boolean = false;
 export const defaultTranslateRouterConfigPathInAssets: string = 'config';
 export const defaultTranslateRouterConfigName: string = 'config.base.json';
+export const defaultTranslateLanguage: string = 'en';
 
 export const defaultAuthorizedRedirectTo: string = '/';
 export const defaultAuthorizationEnabled: boolean = false;

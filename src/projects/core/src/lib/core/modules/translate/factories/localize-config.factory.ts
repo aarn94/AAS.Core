@@ -8,11 +8,11 @@ import { LocalizeParser, LocalizeRouterSettings } from '@gilsdav/ngx-translate-r
 import { TranslateService } from '@ngx-translate/core';
 
 import {
-  defaultBrowserAssetsPath,
-   defaultTranslateRouterConfigName,
-   defaultTranslateRouterConfigPathInAssets,
-   defaultTranslateRouterEnabled,
-  } from '../../../../shared/constants';
+  defaultBrowserAssetsPath, defaultTranslateLanguage,
+  defaultTranslateRouterConfigName,
+  defaultTranslateRouterConfigPathInAssets,
+  defaultTranslateRouterEnabled,
+} from '../../../../shared/constants';
 import { IAssetsSettings } from '../../../interfaces';
 import { ASSETS_SETTINGS } from '../../../tokens';
 import { ITranslationSettings } from '../interfaces';
@@ -25,20 +25,27 @@ export class LocalizeConfigLoader extends LocalizeParser {
   private configPathInAssets: string;
   private enabled: boolean;
   private fullPath: string;
+  private defaultLanguage: string;
+
+  private readonly translateService: TranslateService;
 
   constructor(translate: TranslateService, location: Location,
               settings: LocalizeRouterSettings, private transfer: TransferState,
               assetsSettings: IAssetsSettings, translationSettings: ITranslationSettings, private http: HttpClient) {
       super(translate, location, settings);
 
+      this.translateService = translate;
       this.enabled = translationSettings?.routerEnabled ?? defaultTranslateRouterEnabled;
       this.assetsPath = assetsSettings?.browserPath ?? defaultBrowserAssetsPath;
       this.configPathInAssets = translationSettings?.configLocationInAssets ?? defaultTranslateRouterConfigPathInAssets;
       this.baseConfigName = translationSettings?.routerLocaleFileName ?? defaultTranslateRouterConfigName;
       this.fullPath = `${this.assetsPath}${this.configPathInAssets}\\`;
+      this.defaultLanguage = translationSettings?.defaultLanguage ?? defaultTranslateLanguage;
     }
 
   load(routes: Routes): Promise<any> {
+    this.translateService.setDefaultLang(this.defaultLanguage);
+
     return new Promise((resolve: any) => {
       if (!this.enabled) {
 

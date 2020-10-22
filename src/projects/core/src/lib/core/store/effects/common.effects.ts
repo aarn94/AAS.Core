@@ -5,6 +5,7 @@ import { Action, Store } from '@ngrx/store';
 import { Observable, of } from 'rxjs';
 import { exhaustMap, skipWhile, switchMap, take, tap } from 'rxjs/operators';
 
+import { MessageLevel } from '../../../shared';
 import { IAppError, INotification, isAppError } from '../../../shared/interfaces';
 import { IAASState, IProps } from '../../../state/interfaces';
 import { restoreLogin } from '../../modules/auth/store/actions';
@@ -31,36 +32,36 @@ import { selectConfigLoaded } from '../selectors';
 export class CommonEffects {
 
   onAppStarted$: Observable<Action> = createEffect(() =>
-  this.actions$.pipe(
-    ofType(appStarted),
-    switchMap(() => this.store.select(selectConfigLoaded).pipe(skipWhile((initialized: boolean) => !initialized))),
-    take(1),
-    exhaustMap(() =>
-    [
-      languageload(),
-    ],
-  )));
+    this.actions$.pipe(
+      ofType(appStarted),
+      switchMap(() => this.store.select(selectConfigLoaded).pipe(skipWhile((initialized: boolean) => !initialized))),
+      take(1),
+      exhaustMap(() =>
+        [
+          languageload(),
+        ],
+      )));
 
   onAppStarted2$: Observable<Action> = createEffect(() =>
     this.actions$.pipe(
       ofType(languageloadSuccess),
       take(1),
       exhaustMap(() =>
-      [
-        restoreLogin(),
-        appStartedSuccess(),
-        setInitialPath({data: document.location.pathname.split('/')}),
-      ],
-    )));
+        [
+          restoreLogin(),
+          appStartedSuccess(),
+          setInitialPath({ data: document.location.pathname.split('/') }),
+        ],
+      )));
 
-    loadingStarted$: Observable<unknown> = createEffect(() =>
+  loadingStarted$: Observable<unknown> = createEffect(() =>
     this.actions$.pipe(
       ofType(loadingStarted),
       tap(() => this.loadingService.show()),
     ), { dispatch: false },
-    );
+  );
 
-    loadingFinished$: Observable < unknown > = createEffect(() =>
+  loadingFinished$: Observable<unknown> = createEffect(() =>
     this.actions$.pipe(
       ofType(loadingFinished),
       tap(() => this.loadingService.stop()),
@@ -72,11 +73,11 @@ export class CommonEffects {
       ofType(handleException),
       exhaustMap((result: IProps<HttpErrorResponse>) => {
         if (isAppError(result?.data?.error)) {
-          return of(handleAppException({data: result.data.error}));
+          return of(handleAppException({ data: result.data.error }));
         } else {
           const error: string = this.internalizationService.getTranslation('SHARED.TEXTS.COMMUNICATION_PROBLEM');
 
-          return of(handleCriticalException({data: error}));
+          return of(handleCriticalException({ data: error }));
         }
       }),
     ),
@@ -101,8 +102,25 @@ export class CommonEffects {
   notificationSent$: Observable<IProps<INotification>> = createEffect(() =>
     this.actions$.pipe(
       ofType(notificationSent),
-      tap((notification: IProps<INotification>) =>
-      this.notificationService.showInfo(notification.data.message, notification.data.title)),
+      tap((notification: IProps<INotification>) => {
+        const type: MessageLevel = notification.data.type ?? MessageLevel.Info;
+
+        switch (type) {
+          case MessageLevel.Error:
+            this.notificationService.showError(notification.data.message, notification.data.title);
+            break;
+          case MessageLevel.Warn:
+            this.notificationService.showWarning(notification.data.message, notification.data.title);
+            break;
+          case MessageLevel.Success:
+            this.notificationService.showSuccess(notification.data.message, notification.data.title);
+            break;
+          case MessageLevel.Info:
+            this.notificationService.showInfo(notification.data.message, notification.data.title);
+            break;
+        }
+
+      }),
     ), { dispatch: false },
   );
 
@@ -110,9 +128,9 @@ export class CommonEffects {
     this.actions$.pipe(
       ofType(modeLoad),
       switchMap(() => {
-       const theme: boolean = this.themeService.restoreTheme();
+        const theme: boolean = this.themeService.restoreTheme();
 
-       return of(modeLoadSuccess({data: theme}));
+        return of(modeLoadSuccess({ data: theme }));
       }),
     ),
   );
@@ -121,11 +139,11 @@ export class CommonEffects {
     this.actions$.pipe(
       ofType(modeModified),
       tap((lang: IProps<boolean>) =>
-      this.themeService.saveTheme(lang.data)),
+        this.themeService.saveTheme(lang.data)),
     ), { dispatch: false },
   );
 
-constructor(private actions$: Actions, private notificationService: NotificationService, private themeService: ThemeService,
-            private loadingService: LoaderService, private internalizationService: InternalizationService,
-            private store: Store<IAASState>) {  }
+  constructor(private actions$: Actions, private notificationService: NotificationService, private themeService: ThemeService,
+              private loadingService: LoaderService, private internalizationService: InternalizationService,
+              private store: Store<IAASState>) { }
 }

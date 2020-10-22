@@ -46,7 +46,7 @@ export class AnalyticsModule {
 
   constructor(@Optional() @SkipSelf() parentModule: AnalyticsModule) {
     if (parentModule) {
-      throw new Error('StateModule is already  loaded. Import it in the AppModule only.');
+      throw new Error('AnalyticsModule is already  loaded. Import it in the AppModule only.');
     }
   }
   // tslint:disable-next-line:no-any

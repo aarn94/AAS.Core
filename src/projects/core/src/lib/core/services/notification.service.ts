@@ -17,4 +17,9 @@ export class NotificationService {
   showSuccess(message: string, title: string = 'Success'): void {
     this.toastrService.success(message, title);
   }
+
+  showWarning(message: string, title: string = 'Warning'): void {
+    this.toastrService.warning(message, title);
+
+  }
 }

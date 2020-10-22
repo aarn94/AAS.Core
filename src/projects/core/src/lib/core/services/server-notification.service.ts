@@ -19,4 +19,9 @@ export class ServerNotificationService {
     console.log('notification success');
     console.log(message);
   }
+
+  showWarning(message: string, title: string = 'Warning'): void {
+    console.log('notification warning');
+    console.log(message);
+  }
 }

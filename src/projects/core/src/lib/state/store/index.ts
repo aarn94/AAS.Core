@@ -1,11 +1,11 @@
 import { Injectable } from '@angular/core';
 import { DataServiceError, EntityOp, ofEntityOp } from '@ngrx/data';
 import { Actions, createEffect } from '@ngrx/effects';
-import { Action, Store } from '@ngrx/store';
+import { Action } from '@ngrx/store';
 import { Observable } from 'rxjs';
 import { switchMap } from 'rxjs/operators';
 
-import { handleAppException, handleCriticalException, handleException, loadingFinished, loadingStarted } from '../../core/store/actions';
+import { handleAppException, handleException, loadingFinished, loadingStarted } from '../../core/store/actions';
 import { isAppError } from '../../shared/interfaces';
 
 @Injectable()
@@ -91,4 +91,5 @@ export class DataStoreEffects {
 
 }
 
-export * from './combine.reducer';
+export * from './server-browser-sync.reducer';
+export * from './sync-meta.reducer';

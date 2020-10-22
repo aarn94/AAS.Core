@@ -37,6 +37,7 @@ export class InternalizationService {
     if (!langData) {
       const selectedDefault: IConfLocale = this.getDefaultLanguage();
 
+      this.logService.trace('set default language to ' + selectedDefault.code, this.traceKey);
       this.translate.use(selectedDefault.code).subscribe(() => {
 
         this.logService.trace('set locale tags', this.traceKey);

@@ -1,5 +1,7 @@
 import { ICommonState } from '../../core/store/reducers/common.reducer';
 import { defaultAppState, IAASState } from '../interfaces';
+
+import { differenceObject } from './difference-object.function';
 declare var window: any;
 
 export function getInitialState(): IAASState {
@@ -23,10 +25,14 @@ export function getInitialState(): IAASState {
       }
 
       StateFromServerToBrowser.Original_State = window.__STATE__;
-      const originalState: any = {
+      let originalState: any = {
         ...window.__STATE__,
         ...StateFromServerToBrowser.Defaults,
       };
+
+      if (StateFromServerToBrowser.ExcludeFromMapping) {
+        originalState = differenceObject(originalState, StateFromServerToBrowser.ExcludeFromMapping);
+      }
 
       StateFromServerToBrowser.Result_State = originalState;
 
@@ -41,4 +47,5 @@ export class StateFromServerToBrowser {
   static Result_State: any = {};
 
   static Defaults: any = null;
+  static ExcludeFromMapping: any = null;
 }

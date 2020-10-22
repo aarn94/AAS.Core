@@ -4,4 +4,5 @@ export interface ITranslationSettings {
   routerLocaleFileName: string;
   routerLocaleFileLocationInAssets: string;
   enabled: boolean;
+  defaultLanguage: string;
 }

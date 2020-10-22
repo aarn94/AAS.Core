@@ -4,7 +4,7 @@ import { Observable, timer } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 
 @Injectable()
-export class  WatchDogService {
+export class WatchDogService {
 
     constructor(@Inject(PLATFORM_ID) private platformId: string) {
     }

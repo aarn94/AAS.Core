@@ -1,14 +1,14 @@
 import { CommonModule } from '@angular/common';
-import { ModuleWithProviders, NgModule, Optional, SkipSelf } from '@angular/core';
+import { Injector, ModuleWithProviders, NgModule, Optional, SkipSelf } from '@angular/core';
+import { CookieService } from '@gorniv/ngx-universal';
 import { EntityDataModule } from '@ngrx/data';
 import { EffectsModule } from '@ngrx/effects';
 import { routerReducer, RouterState, StoreRouterConnectingModule } from '@ngrx/router-store';
-import { StoreModule } from '@ngrx/store';
+import { StoreModule, USER_PROVIDED_META_REDUCERS } from '@ngrx/store';
 import { StoreDevtoolsModule } from '@ngrx/store-devtools';
 
 import { getInitialState } from './functions';
-import { DataStoreEffects } from './store';
-import { combineReducers } from './store/combine.reducer';
+import { DataStoreEffects, getMetaReducers } from './store';
 
 @NgModule({
   declarations: [],
@@ -23,7 +23,8 @@ import { combineReducers } from './store/combine.reducer';
           strictActionImmutability: true,
         },
         initialState: getInitialState,
-        reducerFactory: combineReducers,
+        metaReducers: [
+        ],
       },
     ),
     StoreRouterConnectingModule.forRoot({
@@ -48,7 +49,13 @@ export class StateModule {
   static forRoot(configuredProviders: any[]): ModuleWithProviders<StateModule> {
     return {
       ngModule: StateModule,
-      providers: configuredProviders,
+      providers: [...configuredProviders,
+        {
+          provide: USER_PROVIDED_META_REDUCERS,
+          deps: [CookieService, Injector],
+          useFactory: getMetaReducers,
+        },
+      ],
     };
   }
 }

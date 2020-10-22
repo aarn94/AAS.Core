@@ -5,7 +5,12 @@
     width: 90vw;
     height: 90vh;
     z-index: 100;
-    margin: 3vw 5vh
+    margin: 5vh 5vw;
+
+   div {
+     border: 1px solid rgba(0, 0, 0, 0.125);
+     background-color: white;
+   }
 }
 
 .full-width {
