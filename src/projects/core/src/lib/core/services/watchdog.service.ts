@@ -9,13 +9,13 @@ export class WatchDogService {
     constructor(@Inject(PLATFORM_ID) private platformId: string) {
     }
 
-    run<T>(func: () => Observable<T>, whenCancel: T = null): Observable<T> {
+    run<T>(func: () => Observable<T>, dueTime: number = 500, whenCancel: T = null): Observable<T> {
 
         if (isPlatformBrowser(this.platformId)) {
             return func();
           }
 
-        const watchdog: Observable<number> = timer(500);
+        const watchdog: Observable<number> = timer(dueTime);
 
         return Observable.create((subject) => {
             func().pipe(takeUntil(watchdog)).subscribe((response: T) => {
