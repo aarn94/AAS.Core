@@ -31,7 +31,7 @@ import { EnumToArrayPipe, SafeHtmlPipe, SafeUrlPipe, SortPipe } from './pipes';
   providers: [
     SortPipe,
     EnumToArrayPipe,
-  ],HttpClientModule
+  ],
   imports: [
     CommonModule,
     TranslateModule,
