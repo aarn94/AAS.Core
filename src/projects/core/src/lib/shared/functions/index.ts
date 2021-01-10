@@ -5,3 +5,4 @@ export * from './generate-guid.function';
 export * from './advanced-filter.function';
 export * from './coerce.function';
 export * from './not-null.function';
+export * from './array-are-equal.function';

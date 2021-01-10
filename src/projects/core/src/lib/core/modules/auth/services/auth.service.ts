@@ -1,29 +1,35 @@
-import { Injectable } from '@angular/core';
+import { Inject, Injectable, Optional } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { BehaviorSubject, Observable, of } from 'rxjs';
 import { catchError, debounceTime, exhaustMap, filter, map, switchMap, take, withLatestFrom } from 'rxjs/operators';
 
+import { notNull } from '../../../../shared/functions';
 import { IAASState } from '../../../../state/interfaces';
-import { StorageService } from '../../../services';
-import { LogService } from '../../../services';
+import { LogService, StorageService } from '../../../services';
 import { selectConfigLoaded } from '../../../store/selectors';
-import { AuthToken, IAuthToken, ITokenResponse } from '../interfaces';
+import { isTokenExpired } from '../functions';
+import { AuthToken, IAuthSettings, IAuthToken, ITokenResponse } from '../interfaces';
 import { refreshTokenRemoved, refreshTokenUsed, tokenRemoved } from '../store/actions';
 import { selectRefreshToken, selectToken } from '../store/selectors';
+import { AUTH_SETTINGS } from '../tokens';
 
 import { AuthenticationService } from './authentication.provider';
 
 @Injectable()
 export class AuthService {
 
-  userDataKey: string = 't';
-  refreshTokenKey: string = 'rkt';
+  userDataKey: string;
+  refreshTokenKey: string;
 
   private isRefreshing: boolean = false;
   private refreshTokenSubject: BehaviorSubject<AuthToken> = new BehaviorSubject<AuthToken>(null);
 
   constructor(private store: Store<IAASState>, private storageProvider: StorageService,
-              private authenticationService: AuthenticationService, private logService: LogService) {}
+              private authenticationService: AuthenticationService, private logService: LogService,
+              @Optional() @Inject(AUTH_SETTINGS) authSettings: IAuthSettings) {
+    this.userDataKey = authSettings.accessTokenKeyName ?? 't';
+    this.refreshTokenKey = authSettings.refreshTokenKeyName ?? 'rkt';
+  }
 
   isAuthenticated(): Observable<boolean> {
     return this.getToken().pipe(
@@ -42,6 +48,17 @@ export class AuthService {
 
         return this.getTokenWithRefreshing();
         }));
+  }
+
+  getTokenWithoutRefreshing(): Observable<IAuthToken> {
+    return this.store.select(selectConfigLoaded).
+    pipe(filter((initialized: boolean) => initialized),
+      take(1),
+      switchMap((e: boolean) => {
+        this.logService.trace('get token without refreshing', 'auth');
+
+        return this.store.select(selectToken);
+      }));
   }
 
   clearTokens(): void {
@@ -82,7 +99,7 @@ export class AuthService {
           this.logService.trace('access token and refresh token not exists', 'auth');
 
           return of(null);
-        } else if (value && !value.isExpired()) {
+        } else if (value && !isTokenExpired(value)) {
           this.logService.trace('return token', 'auth');
 
           return of(value);
@@ -95,7 +112,7 @@ export class AuthService {
   }
 
   private removeTokenIfExpired(token: IAuthToken): void {
-    if (token?.isExpired()) {
+    if (isTokenExpired(token)) {
       this.logService.trace('token expired', 'auth');
       this.logService.trace(Date.now(), 'auth');
       this.logService.trace(token.exp * 1000, 'auth');
@@ -109,13 +126,15 @@ export class AuthService {
       if (!this.isRefreshing) {
         this.isRefreshing = true;
         this.logService.trace('refreshing token', 'auth');
+
         return this.useRefreshToken(refreshToken);
 
       } else {
         this.logService.trace('waiting for refresh token', 'auth');
 
         return this.refreshTokenSubject.pipe(
-          take(2));
+          notNull(),
+          take(1));
       }
     } else {
       this.logService.trace('refresh token not exists', 'auth');

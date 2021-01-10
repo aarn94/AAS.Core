@@ -10,6 +10,10 @@ import { StoreDevtoolsModule } from '@ngrx/store-devtools';
 import { getInitialState } from './functions';
 import { DataStoreEffects, getMetaReducers } from './store';
 
+export class DEV_REDUX {
+  static Enabled: boolean = true;
+}
+
 @NgModule({
   declarations: [],
   imports: [
@@ -32,7 +36,7 @@ import { DataStoreEffects, getMetaReducers } from './store';
     }),
     StoreDevtoolsModule.instrument({
       maxAge: 50,
-      logOnly: true,
+      logOnly: DEV_REDUX.Enabled,
     }),
     EffectsModule.forRoot([DataStoreEffects]),
     EntityDataModule.forRoot({}),

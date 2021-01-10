@@ -4,7 +4,7 @@ import { Observable, throwError } from 'rxjs';
 import { catchError, switchMap, take, tap } from 'rxjs/operators';
 
 import { defaultAuthorizationEnabled } from '../../../../shared/constants';
-import { LogService } from '../../../services';
+import { AnonymousRequestsProvider, LogService } from '../../../services';
 import { IAuthSettings, IAuthToken } from '../interfaces';
 import { AuthService } from '../services';
 import { AUTH_SETTINGS } from '../tokens';
@@ -15,18 +15,20 @@ export class TokenInterceptor implements HttpInterceptor {
   private enabled: boolean;
 
   constructor(public authService: AuthService, @Optional()
-              @Inject(AUTH_SETTINGS) authSettings: IAuthSettings, private logService: LogService) {
+              @Inject(AUTH_SETTINGS) authSettings: IAuthSettings,
+              private logService: LogService,
+              private readonly anonymous: AnonymousRequestsProvider) {
     this.enabled = authSettings?.enabled ?? defaultAuthorizationEnabled;
   }
 
   intercept(req: HttpRequest<unknown>, next: HttpHandler): Observable<HttpEvent<unknown>> {
     this.logService.trace('Start request', 'auth');
     this.logService.trace(req, 'auth');
-    if (!this.enabled) {
+    if (!this.enabled || this.anonymous.isAnonymous(req.url)) {
       return next.handle(req);
     }
 
-    return this.authService.getToken().pipe(
+    return this.authService.getTokenWithoutRefreshing().pipe(
       take(1),
       switchMap((token: IAuthToken) => {
         this.logService.trace('Token interceptor with token', 'auth');
@@ -35,14 +37,15 @@ export class TokenInterceptor implements HttpInterceptor {
         if (token) {
           return this.handleWithUnauthorized(this.addToken(req, token.token), next);
         } else {
-          return next.handle(req);
+          return this.handleWithUnauthorized(req, next);
         }
       }),
     );
   }
 
   private handleWithUnauthorized(request: HttpRequest<unknown>, next: HttpHandler): Observable<HttpEvent<unknown>> {
-    return next.handle(request).pipe(catchError((error: unknown) => {
+    return next.handle(request).pipe(
+      catchError((error: unknown) => {
       if (error instanceof HttpErrorResponse && error.status === 401) {
         return this.handle401Error(request, next, error);
       } else {

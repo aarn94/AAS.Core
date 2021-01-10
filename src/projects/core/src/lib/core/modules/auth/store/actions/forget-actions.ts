@@ -7,9 +7,17 @@ export const phoneForgetPasswordStarted = createAction(
   props< {data: IForgetPasswordRequest}>(),
 );
 
+export const phoneForgetPasswordSuccess = createAction(
+  '[Auth] Forget password by phone success',
+);
+
 export const emailForgetPasswordStarted = createAction(
   '[Auth] Forget password by email started',
   props< {data: IForgetPasswordRequest}>(),
+);
+
+export const emailForgetPasswordSuccess = createAction(
+  '[Auth] Forget password by email success',
 );
 
 export const resetPassword = createAction(

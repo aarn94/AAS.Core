@@ -20,10 +20,13 @@ export interface IRevokeRefreshTokenRequest {
 export interface ISignUpRequest {
   email?: string;
   phone?: string;
-  password: string;
-  captcha: string;
-  userName: string;
-  acceptTerms: boolean;
+  password?: string;
+  captcha?: string;
+  userName?: string;
+  acceptTerms?: boolean;
+  firstName?: string;
+  lastName?: string;
+  emailNewsletter?: boolean;
 }
 
 export interface IConfirmPhoneNumberRequest {

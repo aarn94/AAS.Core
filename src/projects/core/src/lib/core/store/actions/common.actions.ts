@@ -4,9 +4,9 @@ import { createAction, props } from '@ngrx/store';
 import { IAppError, INotification } from '../../../shared/interfaces';
 
 export const handleException = createAction(
-    '[Common] Exception occurred',
-    props<{data: HttpErrorResponse}>(),
-  );
+  '[Common] Exception occurred',
+  props<{data: Error, text?: string }>(),
+);
 
 export const notificationSent = createAction(
     '[Common] Info message sent',
@@ -20,7 +20,7 @@ export const handleAppException = createAction(
 
 export const handleCriticalException = createAction(
     '[Common] Handle critical exception',
-    props<{data: string}>(),
+    props<{data: string, details?: any}>(),
 );
 
 export const appStarted = createAction(
@@ -55,4 +55,8 @@ export const modeLoadSuccess = createAction(
 
 export const configLoaded = createAction(
   '[Common] Config loaded',
-)
+);
+
+export const noAction = createAction(
+  '[Common] No Action',
+);

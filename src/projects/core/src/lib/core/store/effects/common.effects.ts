@@ -8,7 +8,8 @@ import { exhaustMap, skipWhile, switchMap, take, tap } from 'rxjs/operators';
 import { MessageLevel } from '../../../shared';
 import { IAppError, INotification, isAppError } from '../../../shared/interfaces';
 import { IAASState, IProps } from '../../../state/interfaces';
-import { restoreLogin } from '../../modules/auth/store/actions';
+import { stringifyError } from '../../functions';
+import { logout, restoreLogin } from '../../modules/auth/store/actions';
 import { InternalizationService } from '../../modules/translate/services';
 import { languageload, languageloadSuccess } from '../../modules/translate/store/actions';
 import { LoaderService, NotificationService, ThemeService } from '../../services';
@@ -22,7 +23,7 @@ import {
   loadingStarted,
   modeLoad,
   modeLoadSuccess,
-  modeModified,
+  modeModified, noAction,
   notificationSent,
   setInitialPath,
 } from '../actions';
@@ -38,6 +39,7 @@ export class CommonEffects {
       take(1),
       exhaustMap(() =>
         [
+          restoreLogin(),
           languageload(),
         ],
       )));
@@ -48,7 +50,6 @@ export class CommonEffects {
       take(1),
       exhaustMap(() =>
         [
-          restoreLogin(),
           appStartedSuccess(),
           setInitialPath({ data: document.location.pathname.split('/') }),
         ],
@@ -71,25 +72,37 @@ export class CommonEffects {
   handleException$: Observable<Action> = createEffect(() =>
     this.actions$.pipe(
       ofType(handleException),
-      exhaustMap((result: IProps<HttpErrorResponse>) => {
-        if (isAppError(result?.data?.error)) {
-          return of(handleAppException({ data: result.data.error }));
-        } else {
-          const error: string = this.internalizationService.getTranslation('SHARED.TEXTS.COMMUNICATION_PROBLEM');
+      exhaustMap((result: { data: Error, text?: string }) => {
+        const error: string = this.internalizationService.getTranslation('SHARED.TEXTS.COMMUNICATION_PROBLEM');
 
-          return of(handleCriticalException({ data: error }));
+        if (result.data instanceof HttpErrorResponse) {
+          if (isAppError(result?.data?.error)) {
+            return of(handleAppException({ data: result.data.error }));
+          } else {
+            return of(handleCriticalException({ data: error, details: result.data }));
+          }
+        } else {
+          return of(handleCriticalException({ data: error, details: stringifyError(result.data)}));
         }
       }),
     ),
   );
 
-  handleAppException$: Observable<IProps<IAppError>> = createEffect(() =>
+  handleAppException$: Observable<Action> = createEffect(() =>
     this.actions$.pipe(
       ofType(handleAppException),
-      tap((error: IProps<IAppError>) => {
-        return this.notificationService.showError(error.data.reason, this.internalizationService.getTranslation('SHARED.TEXTS.ERROR'));
+      switchMap((error: IProps<IAppError>) => {
+        if (error.data.code === 'token_max_limit_exceeded') {
+          logout({callbackUrl: null});
+        }
+
+        this.notificationService.showError(error.data.reason, this.internalizationService.getTranslation('SHARED.TEXTS.ERROR'));
+
+        return [
+          noAction(),
+        ];
       }),
-    ), { dispatch: false },
+    ),
   );
 
   handleCriticalException$: Observable<IProps<string>> = createEffect(() =>

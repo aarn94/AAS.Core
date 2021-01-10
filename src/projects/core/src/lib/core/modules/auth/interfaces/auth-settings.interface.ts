@@ -8,5 +8,6 @@ export interface IAuthSettings {
   resetPasswordEmailRoute?: string;
   phoneVerificationRoute?: string;
   emailVerificationRoute?: string;
-  verificationRoute?: string;
+  refreshTokenKeyName?: string;
+  accessTokenKeyName?: string;
 }

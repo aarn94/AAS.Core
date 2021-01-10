@@ -11,7 +11,7 @@ import { TranslateModule } from '@ngx-translate/core';
 import { Angulartics2Module } from 'angulartics2';
 
 import { FeatherIconsComponent, FormFieldComponent, FullWidthComponent, TapToTopComponent } from './components';
-import { DebounceClickDirective, MoveToHeadDirective, StoreLinkDirective } from './directives';
+import { BackgroundColorDirective, DebounceClickDirective, MoveToHeadDirective, StoreLinkDirective } from './directives';
 import { EnumToArrayPipe, SafeHtmlPipe, SafeUrlPipe, SortPipe } from './pipes';
 
 @NgModule({
@@ -27,6 +27,7 @@ import { EnumToArrayPipe, SafeHtmlPipe, SafeUrlPipe, SortPipe } from './pipes';
     FullWidthComponent,
     SafeHtmlPipe,
     MoveToHeadDirective,
+    BackgroundColorDirective,
   ],
   providers: [
     SortPipe,
@@ -63,6 +64,7 @@ import { EnumToArrayPipe, SafeHtmlPipe, SafeUrlPipe, SortPipe } from './pipes';
     SafeHtmlPipe,
     SafeUrlPipe,
     MoveToHeadDirective,
+    BackgroundColorDirective,
   ],
 })
 export class AASSharedModule { }

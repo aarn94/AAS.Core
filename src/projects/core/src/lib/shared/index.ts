@@ -6,3 +6,4 @@ export * from './directives/index';
 export * from './enums/index';
 export * from './functions/index';
 export * from './pipes/index';
+export * from './validators/index';

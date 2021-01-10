@@ -29,6 +29,7 @@ import { TranslateEffects } from './modules/translate/store/effects';
 import { translateReducer } from './modules/translate/store/reducers';
 import {
   AnonymousRequestsProvider,
+  ConfirmationService,
   ConsoleService,
   LoaderService,
   LogService,
@@ -38,9 +39,7 @@ import {
   ThemeService,
   WatchDogService,
 } from './services';
-import { ConfirmationService } from './services/confirmation.service';
-import { CommonEffects } from './store/effects/common.effects';
-import { NavigationEffects } from './store/effects/navigation.effects';
+import { CommonEffects, NavigationEffects } from './store/effects';
 import { CORE_FEATURE } from './store/reducers';
 import { commonReducer } from './store/reducers/common.reducer';
 import { navigationReducer } from './store/reducers/navigation.reducer';

@@ -11,7 +11,7 @@ import { go, handleException, notificationSent } from '../../../../store/actions
 import { IAuthSettings, IForgetPasswordRequest, IResetPasswordRequest } from '../../interfaces';
 import { AuthenticationService, AuthTextsService } from '../../services';
 import { AUTH_SETTINGS } from '../../tokens';
-import { emailForgetPasswordStarted, phoneForgetPasswordStarted, resetPassword } from '../actions';
+import { emailForgetPasswordStarted, emailForgetPasswordSuccess, phoneForgetPasswordStarted, phoneForgetPasswordSuccess, resetPassword } from '../actions';
 
 @Injectable()
 export class ForgetEffects {
@@ -20,9 +20,14 @@ export class ForgetEffects {
       ofType(emailForgetPasswordStarted),
       exhaustMap((result: IProps<IForgetPasswordRequest>) =>
         this.authService.forgetPassword(result.data).pipe(
-          map((response: unknown) => go({
-            data: ['/' + this.resetPasswordEmailRoute],
-            extras: {queryParams: {email: result.data.email}}})),
+          switchMap((response: unknown) => {
+            return [
+              emailForgetPasswordSuccess(),
+              go({
+              data: ['/' + this.resetPasswordEmailRoute],
+              extras: {queryParams: {email: result.data.email}},
+            })];
+          }),
           catchError((error: HttpErrorResponse) => of(handleException({ data: error }))),
         ),
       ),
@@ -34,9 +39,15 @@ export class ForgetEffects {
       ofType(phoneForgetPasswordStarted),
       exhaustMap((result: IProps<IForgetPasswordRequest>) =>
         this.authService.forgetPassword(result.data).pipe(
-          map((response: unknown) => go({
-            data: ['/' + this.resetPasswordPhoneRoute],
-            extras: {queryParams: {phone: result.data.phone}}})),
+          switchMap((response: unknown) => {
+            return [
+              phoneForgetPasswordSuccess(),
+              go({
+              data: ['/' + this.resetPasswordPhoneRoute],
+              extras: {queryParams: {phone: result.data.phone}},
+            }),
+              ];
+          }),
           catchError((error: HttpErrorResponse) => of(handleException({ data: error }))),
         ),
       ),
@@ -61,9 +72,9 @@ export class ForgetEffects {
     ),
   );
 
-  private loginRoute: string;
-  private resetPasswordEmailRoute: string;
-  private resetPasswordPhoneRoute: string;
+  private readonly loginRoute: string;
+  private readonly resetPasswordEmailRoute: string;
+  private readonly resetPasswordPhoneRoute: string;
 
   constructor(private actions$: Actions, private authService: AuthenticationService,
               private authTextsService: AuthTextsService,

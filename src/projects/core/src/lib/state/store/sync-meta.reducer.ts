@@ -12,6 +12,13 @@ import { serverToBrowserSync } from './server-browser-sync.reducer';
 
 export const mergeReducer = (state: any, rehydratedState: any, action: any): any => {
   if (action.type === '@ngrx/store/update-reducers') {
+    if (!state) {
+      return rehydratedState;
+    }
+    if (!rehydratedState) {
+      return state;
+    }
+
     return deepmerge(state, rehydratedState);
   }
 

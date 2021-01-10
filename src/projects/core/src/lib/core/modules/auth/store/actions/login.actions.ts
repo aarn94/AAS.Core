@@ -4,7 +4,7 @@ import { IAuthToken, ILoginError, IRepeatConfirmationProcessRequest, ISignInRequ
 
 export const loginInit = createAction(
   '[Auth] Login initialized',
-  props < {data: ISignInRequest}>(),
+  props < {data: ISignInRequest, callbackUrl?: string}>(),
 );
 
 export const restoreLogin = createAction(
@@ -55,7 +55,7 @@ export const loginFailed = createAction(
 
 export const loginSuccess = createAction(
   '[Auth] Login processing success',
-  props <{data: ITokenResponse}>(),
+  props <{data: ITokenResponse, callbackUrl?: string}>(),
 );
 
 export const loginCompleted = createAction(
@@ -64,6 +64,7 @@ export const loginCompleted = createAction(
 
 export const logout = createAction(
   '[Auth] Logout',
+  props <{callbackUrl?: string}>(),
 );
 
 export const repeatConfirmationProcess = createAction(

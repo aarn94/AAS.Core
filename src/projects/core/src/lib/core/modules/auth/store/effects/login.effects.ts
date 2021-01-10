@@ -40,9 +40,10 @@ export class LoginEffects {
   initLogin$: Observable<Action> = createEffect(() =>
     this.actions$.pipe(
       ofType(loginInit),
-      exhaustMap((result: IProps<ISignInRequest>) =>
+      exhaustMap((result: {data: ISignInRequest, callbackUrl?: string}) =>
         this.authenticationService.signIn(result.data).pipe(
-          map((response: ITokenResponse) => loginSuccess({ data: response })),
+          map((response: ITokenResponse) => loginSuccess({
+            data: response, callbackUrl: result.callbackUrl })),
           catchError((error: HttpErrorResponse) => {
             return of(loginFailed({ data: { error, login: result.data.login } }));
           }),
@@ -55,10 +56,11 @@ export class LoginEffects {
     this.actions$.pipe(
       ofType(loginSuccess),
       withLatestFrom(this.store.select(selectQueryParam('redirectUrl'))),
-      exhaustMap(([result, redirectUrl]: [IProps<ITokenResponse>, string]) => {
+      exhaustMap(([result, redirectUrl]: [{data: ITokenResponse, callbackUrl?: string}, string]) => {
         this.authService.saveToken(result.data.accessToken, result.data.refreshToken);
-        const url: string[] = redirectUrl ?
-          redirectUrl.split('/')
+        const url: string[] = result.callbackUrl ? decodeURI(result.callbackUrl).split('/')
+          : redirectUrl ?
+          decodeURI(redirectUrl).split('/')
           : ['/' + this.homeRoute];
 
         return of(go({ data: url }));
@@ -69,10 +71,13 @@ export class LoginEffects {
   logout$: Observable<Action> = createEffect(() =>
     this.actions$.pipe(
       ofType(logout),
-      exhaustMap(() => {
+      exhaustMap((data: {callbackUrl?: string}) => {
         this.authService.clearTokens();
 
-        return of(go({ data: ['/' + this.loginRoute] }));
+        const url: string[] = data.callbackUrl ? decodeURI(data.callbackUrl).split('/')
+          : ['/' + this.loginRoute];
+
+        return of(go({ data: url }));
       },
       ),
     ));
@@ -117,12 +122,12 @@ export class LoginEffects {
           if (errorCode === 'account_not_confirmed_by_mail') {
             return of(go({
               data: ['/' + this.emailVerificationRoute],
-              extras: { queryParams: { email: result.data.login } }
+              extras: { queryParams: { email: result.data.login } },
             }));
           } else if (errorCode === 'account_not_confirmed_by_phone') {
             return of(go({
               data: ['/' + this.phoneVerificationRoute],
-              extras: { queryParams: { phone: result.data.login } }
+              extras: { queryParams: { phone: result.data.login } },
             }));
           } else {
             return of(handleAppException({ data: result.data.error.error }));
@@ -166,9 +171,9 @@ export class LoginEffects {
   private emailVerificationRoute: string;
 
   constructor(private actions$: Actions, private authenticationService: AuthenticationService,
-    private authService: AuthService, private authTextsService: AuthTextsService,
-    private store: Store<IAASState>,
-    @Optional() @Inject(AUTH_SETTINGS) authSettings: IAuthSettings) {
+              private authService: AuthService, private authTextsService: AuthTextsService,
+              private store: Store<IAASState>,
+              @Optional() @Inject(AUTH_SETTINGS) authSettings: IAuthSettings) {
     this.homeRoute = authSettings?.authorizedRedirectTo ?? defaultAuthorizedRedirectTo;
     this.loginRoute = authSettings?.unauthorizedRedirectTo ?? defaultUnAuthorizedRedirectTo;
     this.phoneVerificationRoute = authSettings?.phoneVerificationRoute ?? defaultPhoneVerificationRoute;

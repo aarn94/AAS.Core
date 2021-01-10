@@ -19,10 +19,10 @@ import { IAuthSettings } from '../../interfaces';
 import { AuthenticationService, AuthTextsService } from '../../services';
 import { AUTH_SETTINGS } from '../../tokens';
 import {
-  emailConfirmationStarted,
+  emailConfirmationStarted, emailSignUpFinished,
   emailSignUpStarted,
   handleEmailConfirmationError,
-  phoneConfirmationStarted,
+  phoneConfirmationStarted, phoneSignUpFinished,
   phoneSignUpStarted,
   resendConfirmationEmail,
   resendConfirmationSms,
@@ -67,10 +67,7 @@ export class SignUpEffects {
       ofType(phoneSignUpStarted),
       exhaustMap((result: IProps<ISignUpRequest>) =>
         this.authService.signUp(result.data).pipe(
-          map((response: unknown) => go({
-            data: ['/' + this.verificationRoute],
-            extras: { queryParams: { phone: result.data.phone } },
-          })),
+          switchMap(() => of(phoneSignUpFinished(result))),
           catchError((error: HttpErrorResponse) => of(handleException({ data: error }))),
         ),
       ),
@@ -82,10 +79,7 @@ export class SignUpEffects {
       ofType(emailSignUpStarted),
       exhaustMap((result: IProps<ISignUpRequest>) =>
         this.authService.signUp(result.data).pipe(
-          map((response: unknown) => go({
-            data: ['/' + this.verificationRoute],
-            extras: { queryParams: { email: result.data.email } },
-          })),
+          switchMap(() => of(emailSignUpFinished(result))),
           catchError((error: HttpErrorResponse) => of(handleException({ data: error }))),
         ),
       ),
@@ -128,12 +122,10 @@ export class SignUpEffects {
         ),
       )));
   private loginRoute: string;
-  private verificationRoute: string;
 
   constructor(private actions$: Actions, private authService: AuthenticationService,
               private authTextsService: AuthTextsService,
               @Optional() @Inject(AUTH_SETTINGS) authSettings: IAuthSettings) {
       this.loginRoute = authSettings?.unauthorizedRedirectTo ?? defaultUnAuthorizedRedirectTo;
-      this.verificationRoute = authSettings?.verificationRoute ?? defaultVerificationRoute;
   }
 }
